@@ -1,27 +1,7 @@
-const cotData = [
-  {
-    date: "2022-12-20",
-    long: "249,149",
-    short: "106,877",
-    changeLong: "12,734",
-    changeShort: "-4,823",
-    longPct: "34.3%",
-    shortPct: "14.7%",
-    net: "142,272",
-  },
-  {
-    date: "2022-12-13",
-    long: "236,415",
-    short: "111,700",
-    changeLong: "-8,648",
-    changeShort: "-8,480",
-    longPct: "30.6%",
-    shortPct: "14.5%",
-    net: "124,715",
-  },
-];
+import { cotData } from "../data/cotData";
 
-const COTTable = () => {
+const COTTable = ({ market }) => {
+  const rows = cotData[market];
   return (
     <div className="mt-10 overflow-x-auto">
       <table className="w-full border-collapse">
@@ -39,7 +19,7 @@ const COTTable = () => {
         </thead>
 
         <tbody>
-          {cotData.map((row, index) => (
+          {rows.map((row, index) => (
             <tr
               key={index}
               className="bg-[#232323] border-b border-gray-700 text-center"
