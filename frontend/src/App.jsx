@@ -7,6 +7,7 @@ import { markets } from "./data/markets";
 import MarketInfoCard from "./components/MarketInfoCard";
 import NetPositionChart from "./components/NetPositionChart";
 import SignalCard from "./components/SignalCard";
+import Footer from "./components/Footer";
 
 function App() {
   const [market, setMarket] = useState("EUR");
@@ -27,6 +28,7 @@ function App() {
       </div>
 
       <NetPositionChart data={chartData} />
+      <Footer />
     </div>
   );
 }
