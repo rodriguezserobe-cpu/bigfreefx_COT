@@ -1,8 +1,7 @@
 import Header from "./components/Header";
 import MarketSelector from "./components/MarketSelector";
 import COTTable from "./components/COTTable";
-import { useState } from "react";
-import { cotData } from "./data/cotData";
+import { useState, useEffect } from "react";
 import { markets } from "./data/markets";
 import MarketInfoCard from "./components/MarketInfoCard";
 import NetPositionChart from "./components/NetPositionChart";
@@ -11,11 +10,31 @@ import Footer from "./components/Footer";
 
 function App() {
   const [market, setMarket] = useState("EUR");
+  const [cotData, setCotData] = useState({});
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/cot")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setCotData(data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
   const latest = cotData[market]?.[0];
-  const chartData = cotData[market];
+  const chartData = cotData[market] || [];
 
   const marketName =
     markets.find((item) => item.code === market)?.name || market;
+
+  if (!latest) {
+    return (
+      <div className="min-h-screen bg-[#111111] text-white flex items-center justify-center">
+        Loading COT Data...
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1b1b1b] to-[#111111] text-white px-10 pt-36 pb-8">
       <Header />
