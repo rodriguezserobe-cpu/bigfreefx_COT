@@ -11,7 +11,7 @@ export const markets = [
   { code: "XAU", name: "Gold" },
   { code: "XAG", name: "Silver" },
 
-  { code: "SPX", name: "S&P 500" },
+  { code: "SPX500", name: "S&P 500" },
   { code: "NAS100", name: "NASDAQ 100" },
   { code: "US30", name: "Dow Jones" },
 ];

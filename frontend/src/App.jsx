@@ -16,12 +16,14 @@ function App() {
     fetch("http://localhost:5000/api/cot/live")
       .then((res) => res.json())
       .then((response) => {
-        setCotData(response.data);
+        console.log("API:", response);
+        setCotData(response);
       })
       .catch((err) => console.error(err));
   }, []);
 
-  const latest = cotData[market];
+  const latest = cotData?.latest?.[market];
+  console.log(latest);
   const chartData = [];
 
   const marketName =

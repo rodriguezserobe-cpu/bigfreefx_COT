@@ -3,6 +3,12 @@ const SignalCard = ({ latest, marketName }) => {
 
   const bullish = latest?.bias === "Bullish";
 
+  // Temporary calculations until backend provides
+  // real Commercial / Non-Commercial / Retail data
+  const commercials = parseFloat(latest.longPct);
+  const nonCommercials = parseFloat(latest.shortPct);
+  const retail = Math.max(0, 100 - commercials - nonCommercials);
+
   return (
     <div className="bg-[#232323] border border-gray-700 rounded-lg p-5 mb-6">
       <h2 className="text-3xl font-bold mb-6">BIGFREE FX SIGNAL</h2>
@@ -44,7 +50,11 @@ const SignalCard = ({ latest, marketName }) => {
 
             <div className="w-full bg-gray-700 rounded-full h-3">
               <div
-                className="bg-green-500 h-3 rounded-full"
+                className={
+                  bullish
+                    ? "bg-green-500 h-3 rounded-full"
+                    : "bg-red-500 h-3 rounded-full"
+                }
                 style={{
                   width: `${strength}%`,
                 }}
@@ -63,11 +73,11 @@ const SignalCard = ({ latest, marketName }) => {
             <div className="w-full bg-gray-700 h-2 rounded-full">
               <div
                 className="bg-green-500 h-2 rounded-full"
-                style={{ width: "72%" }}
+                style={{ width: `${commercials}%` }}
               />
             </div>
 
-            <p className="mt-2">72%</p>
+            <p className="mt-2">{commercials}%</p>
           </div>
 
           <div className="text-center">
@@ -78,26 +88,26 @@ const SignalCard = ({ latest, marketName }) => {
             <div className="w-full bg-gray-700 h-2 rounded-full">
               <div
                 className="bg-red-500 h-2 rounded-full"
-                style={{ width: "21%" }}
+                style={{ width: `${nonCommercials}%` }}
               />
             </div>
 
-            <p className="mt-2">21%</p>
+            <p className="mt-2">{nonCommercials}%</p>
           </div>
 
           <div className="text-center">
             <p className="text-gray-400 text-sm">Retail Traders</p>
 
-            <p className="text-red-400 mb-3">Bearish</p>
+            <p className="text-yellow-400 mb-3">Neutral</p>
 
             <div className="w-full bg-gray-700 h-2 rounded-full">
               <div
-                className="bg-red-500 h-2 rounded-full"
-                style={{ width: "7%" }}
+                className="bg-yellow-500 h-2 rounded-full"
+                style={{ width: `${retail}%` }}
               />
             </div>
 
-            <p className="mt-2">7%</p>
+            <p className="mt-2">{retail.toFixed(1)}%</p>
           </div>
         </div>
       </div>

@@ -9,19 +9,15 @@ export const fetchCFTCData = async () => {
     );
 
     const rows = response.data.split("\n");
-    const matches = rows.filter(
-      (row) =>
-        row.includes("GOLD") ||
-        row.includes("SILVER") ||
-        row.includes("NASDAQ") ||
-        row.includes("S&P") ||
-        row.includes("DJIA"),
-    );
 
-    console.log(matches);
+    console.log("Total rows:", rows.length);
+
+    rows.slice(0, 20).forEach((row) => console.log(row));
 
     const wantedMarkets = {
+      "U.S. DOLLAR INDEX": "USD",
       "USD INDEX": "USD",
+
       "EURO FX": "EUR",
       "BRITISH POUND": "GBP",
       "JAPANESE YEN": "JPY",
@@ -30,12 +26,9 @@ export const fetchCFTCData = async () => {
       "SWISS FRANC": "CHF",
       "NZ DOLLAR": "NZD",
 
-      "GOLD: "XAU",
-      "SILVER: "XAG",
-
-      "E-MINI S&P 500 STOCK INDEX": "SPX",
-      "E-MINI NASDAQ-100 STOCK INDEX": "NAS100",
-      "DJIA x $5": "US30",
+      "DJIA Consolidated": "US30",
+      "S&P 500 Consolidated": "SPX500",
+      "NASDAQ-100 Consolidated": "NAS100",
     };
 
     const result = {};

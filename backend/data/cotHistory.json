@@ -110,5 +110,47 @@
       "bias": "Bullish",
       "openInterest": 50285
     }
+  ],
+  "US30": [
+    {
+      "date": "2026-06-09",
+      "long": 14644,
+      "short": 15333,
+      "changeLong": -318,
+      "changeShort": 1200,
+      "net": -689,
+      "longPct": "18.4%",
+      "shortPct": "19.3%",
+      "bias": "Bearish",
+      "openInterest": 79613
+    }
+  ],
+  "SPX500": [
+    {
+      "date": "2026-06-09",
+      "long": 1208185,
+      "short": 221347,
+      "changeLong": 63364,
+      "changeShort": 19559,
+      "net": 986838,
+      "longPct": "53.9%",
+      "shortPct": "9.9%",
+      "bias": "Bullish",
+      "openInterest": 2242004
+    }
+  ],
+  "NAS100": [
+    {
+      "date": "2026-06-09",
+      "long": 115987,
+      "short": 31550,
+      "changeLong": 709,
+      "changeShort": -2994,
+      "net": 84437,
+      "longPct": "34.6%",
+      "shortPct": "9.4%",
+      "bias": "Bullish",
+      "openInterest": 334790
+    }
   ]
 }
