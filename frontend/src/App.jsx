@@ -13,17 +13,16 @@ function App() {
   const [cotData, setCotData] = useState({});
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/cot")
+    fetch("http://localhost:5000/api/cot/live")
       .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setCotData(data);
+      .then((response) => {
+        setCotData(response.data);
       })
       .catch((err) => console.error(err));
   }, []);
 
-  const latest = cotData[market]?.[0];
-  const chartData = cotData[market] || [];
+  const latest = cotData[market];
+  const chartData = [];
 
   const marketName =
     markets.find((item) => item.code === market)?.name || market;
@@ -43,7 +42,7 @@ function App() {
 
       <div className="w-full">
         <MarketInfoCard marketName={marketName} latest={latest} />
-        <COTTable market={market} />
+        <COTTable data={latest} />
       </div>
 
       <NetPositionChart data={chartData} />

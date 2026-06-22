@@ -1,10 +1,7 @@
 const SignalCard = ({ latest, marketName }) => {
-  const longPct = parseFloat(latest?.longPct);
-  const shortPct = parseFloat(latest?.shortPct);
+  const strength = Math.min(100, Math.round(Math.abs(latest.net) / 5000));
 
-  const strength = Math.min(Math.round((longPct - shortPct) * 4), 100);
-
-  const bullish = latest?.net > 0;
+  const bullish = latest?.bias === "Bullish";
 
   return (
     <div className="bg-[#232323] border border-gray-700 rounded-lg p-5 mb-6">

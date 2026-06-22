@@ -1,7 +1,4 @@
-import { cotData } from "../data/cotData";
-
-const COTTable = ({ market }) => {
-  const rows = cotData[market];
+const COTTable = ({ data }) => {
   return (
     <div className="mt-10 overflow-x-auto">
       <table className="w-full border-collapse">
@@ -19,28 +16,23 @@ const COTTable = ({ market }) => {
         </thead>
 
         <tbody>
-          {rows.map((row, index) => (
-            <tr
-              key={index}
-              className="bg-[#232323] border-b border-gray-700 text-center"
-            >
-              <td className="p-3">{row.date}</td>
+          <tr className="bg-[#232323] text-center">
+            <td className="p-3">{data?.date}</td>
 
-              <td className="p-3 bg-green-300 text-black">{row.long}</td>
+            <td className="p-3 bg-green-300 text-black">{data?.long}</td>
 
-              <td className="p-3 bg-red-300 text-black">{row.short}</td>
+            <td className="p-3 bg-red-300 text-black">{data?.short}</td>
 
-              <td className="p-3">{row.changeLong}</td>
+            <td className="p-3 text-green-400">{data?.changeLong}</td>
 
-              <td className="p-3">{row.changeShort}</td>
+            <td className="p-3 text-red-400">{data?.changeShort}</td>
 
-              <td className="p-3">{row.longPct}</td>
+            <td className="p-3">{data?.longPct}</td>
 
-              <td className="p-3">{row.shortPct}</td>
+            <td className="p-3">{data?.shortPct}</td>
 
-              <td className="p-3 bg-green-200 text-black">{row.net}</td>
-            </tr>
-          ))}
+            <td className="p-3 bg-green-200 text-black">{data?.net}</td>
+          </tr>
         </tbody>
       </table>
     </div>

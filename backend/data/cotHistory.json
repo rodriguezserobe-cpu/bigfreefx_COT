@@ -1,0 +1,114 @@
+{
+  "EUR": [
+    {
+      "date": "2026-06-09",
+      "long": 462310,
+      "short": 180754,
+      "changeLong": -7854,
+      "changeShort": 13451,
+      "net": 281556,
+      "longPct": "53.0%",
+      "shortPct": "20.7%",
+      "bias": "Bullish",
+      "openInterest": 871507
+    }
+  ],
+  "GBP": [
+    {
+      "date": "2026-06-09",
+      "long": 15818,
+      "short": 125474,
+      "changeLong": 2383,
+      "changeShort": 16825,
+      "net": -109656,
+      "longPct": "5.4%",
+      "shortPct": "43.1%",
+      "bias": "Bearish",
+      "openInterest": 291371
+    }
+  ],
+  "JPY": [
+    {
+      "date": "2026-06-09",
+      "long": 73711,
+      "short": 151787,
+      "changeLong": -1936,
+      "changeShort": -17355,
+      "net": -78076,
+      "longPct": "14.6%",
+      "shortPct": "30.1%",
+      "bias": "Bearish",
+      "openInterest": 505075
+    }
+  ],
+  "AUD": [
+    {
+      "date": "2026-06-09",
+      "long": 61743,
+      "short": 73826,
+      "changeLong": -8231,
+      "changeShort": 9652,
+      "net": -12083,
+      "longPct": "19.7%",
+      "shortPct": "23.5%",
+      "bias": "Bearish",
+      "openInterest": 314177
+    }
+  ],
+  "CAD": [
+    {
+      "date": "2026-06-09",
+      "long": 54900,
+      "short": 128539,
+      "changeLong": -4148,
+      "changeShort": 45991,
+      "net": -73639,
+      "longPct": "14.3%",
+      "shortPct": "33.5%",
+      "bias": "Bearish",
+      "openInterest": 383773
+    }
+  ],
+  "CHF": [
+    {
+      "date": "2026-06-09",
+      "long": 6450,
+      "short": 43003,
+      "changeLong": -154,
+      "changeShort": -290,
+      "net": -36553,
+      "longPct": "5.6%",
+      "shortPct": "37.3%",
+      "bias": "Bearish",
+      "openInterest": 115412
+    }
+  ],
+  "NZD": [
+    {
+      "date": "2026-06-09",
+      "long": 7585,
+      "short": 39370,
+      "changeLong": 2026,
+      "changeShort": 8484,
+      "net": -31785,
+      "longPct": "5.1%",
+      "shortPct": "26.4%",
+      "bias": "Bearish",
+      "openInterest": 149185
+    }
+  ],
+  "USD": [
+    {
+      "date": "2026-06-09",
+      "long": 20419,
+      "short": 3818,
+      "changeLong": 189,
+      "changeShort": 94,
+      "net": 16601,
+      "longPct": "40.6%",
+      "shortPct": "7.6%",
+      "bias": "Bullish",
+      "openInterest": 50285
+    }
+  ]
+}
