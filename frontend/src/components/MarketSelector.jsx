@@ -4,7 +4,7 @@ const MarketSelector = ({ market, setMarket }) => {
   const selectedMarket = markets.find((item) => item.code === market);
 
   return (
-    <div className="flex justify-center gap-3 mb-8">
+    <div className="flex flex-col sm:flex-row justify-center gap-3 mb-8">
       {/* Dropdown */}
       <select
         value={market}

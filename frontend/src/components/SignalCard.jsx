@@ -13,10 +13,10 @@ const SignalCard = ({ latest, marketName }) => {
     <div className="bg-[#232323] border border-gray-700 rounded-lg p-5 mb-6">
       <h2 className="text-3xl font-bold mb-6">BIGFREE FX SIGNAL</h2>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* LEFT SIDE */}
         <div>
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div>
               <p className="text-gray-400 text-sm">Market</p>
               <p className="text-xl font-semibold">{marketName}</p>
@@ -64,7 +64,7 @@ const SignalCard = ({ latest, marketName }) => {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="grid grid-cols-3 gap-4 border-l border-gray-700 pl-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t sm:border-t-0 sm:border-l border-gray-700 pt-6 sm:pt-0 sm:pl-6">
           <div className="text-center">
             <p className="text-gray-400 text-sm">Commercials</p>
 

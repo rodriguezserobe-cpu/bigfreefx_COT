@@ -19,7 +19,12 @@ const NetPositionChart = ({ data }) => {
 
           <XAxis dataKey="date" />
 
-          <YAxis />
+          <YAxis
+            domain={[
+              (dataMin) => dataMin - 10000,
+              (dataMax) => dataMax + 10000,
+            ]}
+          />
 
           <Tooltip />
 
@@ -28,6 +33,8 @@ const NetPositionChart = ({ data }) => {
             dataKey="net"
             stroke="#14a3e2"
             strokeWidth={3}
+            dot={{ r: 5 }}
+            activeDot={{ r: 8 }}
           />
         </LineChart>
       </ResponsiveContainer>

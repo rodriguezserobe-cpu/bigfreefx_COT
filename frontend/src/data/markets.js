@@ -14,4 +14,10 @@ export const markets = [
   { code: "SPX500", name: "S&P 500" },
   { code: "NAS100", name: "NASDAQ 100" },
   { code: "US30", name: "Dow Jones" },
+  { code: "GER30", name: "Germany 40 (DAX)" },
+
+  { code: "BTC", name: "Bitcoin" },
+  { code: "ETH", name: "Ethereum" },
+  { code: "XRP", name: "XRP" },
+  { code: "SOL", name: "Solana" },
 ];
