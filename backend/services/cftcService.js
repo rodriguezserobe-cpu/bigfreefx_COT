@@ -4,19 +4,25 @@ import fs from "fs-extra";
 
 export const fetchCFTCData = async () => {
   try {
-    // Financial Futures Report
+    // ==========================
+    // DOWNLOAD REPORTS
+    // ==========================
     const financialResponse = await axios.get(
       "https://www.cftc.gov/dea/newcot/FinFutWk.txt",
     );
 
-    // Commodity Futures Report (Gold, Silver, etc.)
-    //const metalsResponse = await axios.get(
-    // "https://www.cftc.gov/dea/newcot/ComFutWk.txt",
-    //);
+    const metalsResponse = await axios.get(
+      "https://www.cftc.gov/dea/newcot/f_disagg.txt",
+    );
 
     const financialRows = financialResponse.data.split("\n");
-    //const metalsRows = metalsResponse.data.split("\n");
+    const metalsRows = metalsResponse.data.split("\n");
 
+    const result = {};
+
+    // ==========================
+    // FINANCIAL MARKETS
+    // ==========================
     const financialMarkets = {
       "U.S. DOLLAR INDEX": "USD",
       "USD INDEX": "USD",
@@ -39,27 +45,12 @@ export const fetchCFTCData = async () => {
       SOL: "SOL",
     };
 
-    /*const metalsMarkets = {
-      GOLD: "XAU",
-      SILVER: "XAG",
-    };*/
-
-    const result = {};
-
-    // ==========================
-    // FINANCIAL MARKETS
-    // ==========================
     financialRows.forEach((row) => {
       for (const marketName in financialMarkets) {
-        if (row.startsWith(`"${marketName} -`)) {
+        if (row.includes(`"${marketName} -`)) {
           const parts = row.split(",");
-          if (marketName === "EURO FX") {
-            console.log("EURO FX ROW:");
-            console.log(parts);
-          }
 
           const openInterest = Number(parts[7]);
-
           const long = Number(parts[11]);
           const short = Number(parts[12]);
 
@@ -67,9 +58,6 @@ export const fetchCFTCData = async () => {
           const changeShort = Number(parts[27]);
 
           const net = long - short;
-
-          const longPct = ((long / openInterest) * 100).toFixed(1);
-          const shortPct = ((short / openInterest) * 100).toFixed(1);
 
           result[financialMarkets[marketName]] = {
             date: parts[2],
@@ -78,8 +66,8 @@ export const fetchCFTCData = async () => {
             changeLong,
             changeShort,
             net,
-            longPct: `${longPct}%`,
-            shortPct: `${shortPct}%`,
+            longPct: ((long / openInterest) * 100).toFixed(1) + "%",
+            shortPct: ((short / openInterest) * 100).toFixed(1) + "%",
             bias: net > 0 ? "Bullish" : "Bearish",
             openInterest,
           };
@@ -88,27 +76,27 @@ export const fetchCFTCData = async () => {
     });
 
     // ==========================
-    // METALS (GOLD & SILVER)
+    // GOLD & SILVER
     // ==========================
-    /*metalsRows.forEach((row) => {
+    const metalsMarkets = {
+      "GOLD - COMMODITY EXCHANGE INC.": "XAU",
+      "SILVER - COMMODITY EXCHANGE INC.": "XAG",
+    };
+    metalsRows.forEach((row) => {
       for (const marketName in metalsMarkets) {
-        if (row.includes(marketName)) {
-          console.log("FOUND METAL:", row);
-
+        if (row.startsWith(`"${marketName}"`)) {
           const parts = row.split(",");
 
           const openInterest = Number(parts[7]);
 
-          const long = Number(parts[11]);
-          const short = Number(parts[12]);
+          // Managed Money
+          const long = Number(parts[13]);
+          const short = Number(parts[14]);
 
-          const changeLong = Number(parts[26]);
-          const changeShort = Number(parts[27]);
+          const changeLong = Number(parts[61]);
+          const changeShort = Number(parts[62]);
 
           const net = long - short;
-
-          const longPct = ((long / openInterest) * 100).toFixed(1);
-          const shortPct = ((short / openInterest) * 100).toFixed(1);
 
           result[metalsMarkets[marketName]] = {
             date: parts[2],
@@ -117,16 +105,16 @@ export const fetchCFTCData = async () => {
             changeLong,
             changeShort,
             net,
-            longPct: `${longPct}%`,
-            shortPct: `${shortPct}%`,
+            longPct: ((long / openInterest) * 100).toFixed(1) + "%",
+            shortPct: ((short / openInterest) * 100).toFixed(1) + "%",
             bias: net > 0 ? "Bullish" : "Bearish",
             openInterest,
           };
         }
       }
-    });*/
+    });
 
-    console.log("Markets loaded:", Object.keys(result));
+    //console.log("Markets loaded:", Object.keys(result));
 
     await saveHistory(result);
 
