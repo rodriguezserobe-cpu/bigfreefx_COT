@@ -1,15 +1,34 @@
-import Header from "./components/Header";
-import COTTable from "./components/COTTable";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Home from "./pages/Home/Home";
+import Dashboard from "./pages/Dashboard/Dashboard";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+/*import Header from "./components/Dashboard/Header";
+import COTTable from "./components/Dashboard/COTTable";
 import { useState, useEffect } from "react";
 import { markets } from "./data/markets";
-import MarketInfoCard from "./components/MarketInfoCard";
-import NetPositionChart from "./components/NetPositionChart";
-import SignalCard from "./components/SignalCard";
-import Footer from "./components/Footer";
-import WeeklyChangeCard from "./components/WeeklyChangeCard";
-import StrengthRanking from "./components/StrengthRanking";
-import WeaknessRanking from "./components/WeaknessRanking";
-import Sidebar from "./components/Sidebar";
+import MarketInfoCard from "./components/Dashboard/MarketInfoCard";
+import NetPositionChart from "./components/Dashboard/NetPositionChart";
+import SignalCard from "./components/Dashboard/SignalCard";
+import Footer from "./components/Dashboard/Footer";
+import WeeklyChangeCard from "./components/Dashboard/WeeklyChangeCard";
+import StrengthRanking from "./components/Dashboard/StrengthRanking";
+import WeaknessRanking from "./components/Dashboard/WeaknessRanking";
+import Sidebar from "./components/Dashboard/Sidebar";
 
 function App() {
   const [market, setMarket] = useState("EUR");
@@ -71,3 +90,4 @@ function App() {
 }
 
 export default App;
+*/

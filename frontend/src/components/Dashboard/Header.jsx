@@ -1,5 +1,5 @@
 import logo from "../assets/logo.png";
-import { markets } from "../data/markets";
+import { markets } from "../../data/markets";
 
 const Header = ({ search, setSearch, setMarket }) => {
   return (

@@ -1,4 +1,4 @@
-import { markets } from "../data/markets";
+import { markets } from "../../data/markets";
 
 const groups = {
   Forex: ["EUR", "GBP", "USD", "JPY", "AUD", "NZD", "CAD", "CHF"],
