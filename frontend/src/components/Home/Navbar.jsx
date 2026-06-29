@@ -1,79 +1,73 @@
+import { useState } from "react";
 import logo from "../../assets/logo.png";
+import LoginModal from "./LoginModal";
+import RegisterModal from "./RegisterModal";
 
-const Navbar = ({ openLogin, openRegister }) => {
+export default function Navbar() {
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#111111]/80 backdrop-blur-xl border-b border-sky-500/20 shadow-lg">
-      <div className="max-w-[1800px] mx-auto px-8 h-20 flex items-center justify-between">
-        {/* Logo */}
+    <>
+      <header className="fixed top-0 left-0 w-full z-50 bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl">
+        <div className="max-w-7xl mx-auto h-24 px-8 flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center gap-4">
+            <img
+              src={logo}
+              alt="BigFree FX"
+              className="w-24 h-24 object-contain"
+            />
 
-        <div className="flex items-center gap-3 cursor-pointer">
-          <img
-            src={logo}
-            alt="Logo"
-            className="w-26 h-26 object-contain translate-y-0 transition-transform duration-300 hover:scale-105"
-          />
+            <div className="translate-y-3">
+              <h1 className="text-2xl font-bold text-white tracking-wide">
+                BIGFREE FX
+              </h1>
 
-          <div>
-            <h1 className="text-2xl font-bold text-white">BIGFREE FX</h1>
+              <p className="text-sky-400 text-sm uppercase tracking-[4px]">
+                Commitment of Traders
+              </p>
+            </div>
+          </div>
 
-            <p className="text-xs uppercase tracking-[0.35em] text-sky-400">
-              Trading
-            </p>
+          {/* Navigation */}
+          <nav className="hidden lg:flex items-center gap-10">
+            {["Home", "HowItWorks", "Preview", "Contact"].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className="relative text-gray-300 hover:text-sky-400 transition duration-300 after:absolute after:left-0 after:-bottom-2 after:w-0 after:h-[2px] after:bg-sky-400 after:transition-all hover:after:w-full"
+              >
+                {item}
+              </a>
+            ))}
+          </nav>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setOpenLogin(true)}
+              className="px-6 py-3 rounded-xl border border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white transition-all duration-300"
+            >
+              Member Login
+            </button>
+
+            <button
+              onClick={() => setOpenRegister(true)}
+              className="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white shadow-lg shadow-sky-500/30 transition-all duration-300"
+            >
+              Become a Member
+            </button>
           </div>
         </div>
+      </header>
 
-        {/* Navigation */}
+      <LoginModal open={openLogin} onClose={() => setOpenLogin(false)} />
 
-        <nav className="hidden lg:flex items-center gap-10">
-          <a
-            href="#home"
-            className="text-gray-300 hover:text-sky-400 transition"
-          >
-            Home
-          </a>
-
-          <a
-            href="#features"
-            className="text-gray-300 hover:text-sky-400 transition"
-          >
-            Features
-          </a>
-
-          <a
-            href="#pricing"
-            className="text-gray-300 hover:text-sky-400 transition"
-          >
-            Pricing
-          </a>
-
-          <a
-            href="#contact"
-            className="text-gray-300 hover:text-sky-400 transition"
-          >
-            Contact
-          </a>
-        </nav>
-
-        {/* Right Side */}
-
-        <div className="flex items-center gap-4">
-          <button
-            onClick={openLogin}
-            className="px-5 py-2 rounded-lg border border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white transition duration-300"
-          >
-            Member Login
-          </button>
-
-          <button
-            onClick={openRegister}
-            className="px-5 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white transition duration-300"
-          >
-            Become a Member
-          </button>
-        </div>
-      </div>
-    </header>
+      <RegisterModal
+        open={openRegister}
+        onClose={() => setOpenRegister(false)}
+      />
+    </>
   );
-};
-
-export default Navbar;
+}

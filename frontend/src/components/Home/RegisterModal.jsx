@@ -1,13 +1,16 @@
 import { X } from "lucide-react";
 
-const RegisterModal = ({ close }) => {
+export default function RegisterModal({ open, onClose }) {
+  // Hide modal if it's not open
+  if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="relative w-full max-w-lg bg-[#1b1b1b] border border-sky-500/20 rounded-2xl shadow-2xl p-8">
         {/* Close Button */}
         <button
-          onClick={close}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white"
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
         >
           <X size={24} />
         </button>
@@ -22,7 +25,6 @@ const RegisterModal = ({ close }) => {
         </p>
 
         {/* Form */}
-
         <div className="space-y-4">
           <input
             type="text"
@@ -62,7 +64,6 @@ const RegisterModal = ({ close }) => {
         </div>
 
         {/* Notice */}
-
         <div className="mt-6 rounded-xl bg-yellow-500/10 border border-yellow-500/30 p-4">
           <h3 className="text-yellow-400 font-semibold mb-2">Important</h3>
 
@@ -80,13 +81,10 @@ const RegisterModal = ({ close }) => {
         </div>
 
         {/* Register Button */}
-
-        <button className="w-full mt-8 bg-sky-500 hover:bg-sky-600 transition py-3 rounded-lg font-semibold text-lg">
+        <button className="w-full mt-8 bg-sky-500 hover:bg-sky-600 transition py-3 rounded-lg font-semibold text-lg text-white">
           Register
         </button>
       </div>
     </div>
   );
-};
-
-export default RegisterModal;
+}

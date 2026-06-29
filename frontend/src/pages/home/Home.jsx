@@ -1,37 +1,27 @@
-import { useState } from "react";
-
 import Navbar from "../../components/Home/Navbar";
-import HeroSlider from "../../components/Home/HeroSlider";
-import Features from "../../components/Home/Features";
-import LoginModal from "../../components/Home/LoginModal";
-import RegisterModal from "../../components/Home/RegisterModal";
+import Hero from "../../components/Home/Hero";
+import FloatingCards from "../../components/Home/FloatingCards";
+import WhyChoose from "../../components/Home/WhyChoose";
+import DashboardPreview from "../../components/Home/DashboardPreview";
+import HowItWorks from "../../components/Home/HowItWorks";
+import Footer from "../../components/Home/Footer";
 
 export default function Home() {
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [registerOpen, setRegisterOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-[#111111] text-white">
-      <Navbar
-        openLogin={() => setLoginOpen(true)}
-        openRegister={() => setRegisterOpen(true)}
-      />
+      <Navbar />
 
-      <HeroSlider />
+      <Hero />
 
-      <Features />
+      <FloatingCards />
 
-      {loginOpen && (
-        <LoginModal
-          close={() => setLoginOpen(false)}
-          openRegister={() => {
-            setLoginOpen(false);
-            setRegisterOpen(true);
-          }}
-        />
-      )}
+      <DashboardPreview />
 
-      {registerOpen && <RegisterModal close={() => setRegisterOpen(false)} />}
+      <WhyChoose />
+
+      <HowItWorks />
+
+      <Footer />
     </div>
   );
 }
