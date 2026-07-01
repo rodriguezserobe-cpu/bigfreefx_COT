@@ -5,13 +5,15 @@ const Sidebar = ({ market, setMarket }) => {
     <aside
       className="
       fixed
-      top-40
+      top-32
       left-0
       bottom-0
       w-52
-      bg-[#151515]
-      border-r
-      border-gray-700
+    bg-[#0d1117]/90
+      border-b
+    border-sky-500/20 
+      shadow-xl
+      backdrop-blur-xl
       p-5
       overflow-y-auto
       "

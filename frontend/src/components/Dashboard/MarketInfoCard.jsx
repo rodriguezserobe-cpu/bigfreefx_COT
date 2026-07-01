@@ -4,7 +4,7 @@ const MarketInfoCard = ({ marketName, latest }) => {
   const bias = netValue > 0 ? "Bullish 🟢" : "Bearish 🔴";
 
   return (
-    <div className="bg-[#232323] border border-gray-700 rounded-lg p-4 mb-6">
+    <div className=" bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-4 mb-6">
       <div className="flex justify-between items-center flex-wrap gap-6">
         <div>
           <p className="text-gray-400 text-sm">Market</p>

@@ -10,7 +10,7 @@ import {
 
 const NetPositionChart = ({ data }) => {
   return (
-    <div className="bg-[#232323] border border-gray-700 rounded-lg p-4 mt-6">
+    <div className=" bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-4 mt-6">
       <h2 className="text-xl font-semibold mb-4">Net Position History</h2>
 
       <ResponsiveContainer width="100%" height={300}>

@@ -19,7 +19,7 @@ const COTTable = ({ data = [] }) => {
           {data.map((row) => (
             <tr
               key={row.date}
-              className="bg-[#232323] text-center border-b border-gray-700"
+              className=" text-center bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl"
             >
               <td className="p-3">{row.date}</td>
 

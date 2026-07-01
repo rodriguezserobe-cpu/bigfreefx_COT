@@ -7,7 +7,7 @@ const WeeklyChangeCard = ({ history }) => {
   const change = current.net - previous.net;
 
   return (
-    <div className="bg-[#232323] border border-gray-700 rounded-lg p-5 mt-6">
+    <div className=" bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-5 mt-6">
       <h2 className="text-xl font-bold mb-4">Weekly Position Change</h2>
 
       <div className="grid grid-cols-3 gap-4">

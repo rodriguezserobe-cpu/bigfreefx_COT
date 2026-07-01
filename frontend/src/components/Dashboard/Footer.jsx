@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="mt-12 border-t border-gray-800 py-6 text-center">
+    <footer className="mt-12 border-t bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl py-6 text-center">
       <p className="text-blue-400 font-semibold tracking-widest">
         BIGFREE FX TRADING
       </p>

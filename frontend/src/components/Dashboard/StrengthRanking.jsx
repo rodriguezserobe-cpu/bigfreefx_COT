@@ -4,7 +4,7 @@ const StrengthRanking = ({ latest }) => {
     .slice(0, 5);
 
   return (
-    <div className="bg-[#232323] border border-gray-700 rounded-lg p-5">
+    <div className=" bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-5">
       <h2 className="text-xl font-bold mb-4">Strongest Markets</h2>
 
       {ranking.map(([code, item], index) => (

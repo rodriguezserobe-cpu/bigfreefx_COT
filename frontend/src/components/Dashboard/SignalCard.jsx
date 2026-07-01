@@ -10,7 +10,7 @@ const SignalCard = ({ latest, marketName }) => {
   const retail = Math.max(0, 100 - commercials - nonCommercials);
 
   return (
-    <div className="bg-[#232323] border border-gray-700 rounded-lg p-5 mb-6">
+    <div className=" top bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-5 mb-6">
       <h2 className="text-3xl font-bold mb-6">BIGFREE FX SIGNAL</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
