@@ -67,3 +67,22 @@ export const rejectUser = async (id) => {
 
   return res.data;
 };
+
+// ===============================
+// Make User Admin
+// ===============================
+export const makeAdmin = async (id) => {
+  const token = localStorage.getItem("token");
+
+  const res = await API.put(
+    `/admin/make-admin/${id}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return res.data;
+};

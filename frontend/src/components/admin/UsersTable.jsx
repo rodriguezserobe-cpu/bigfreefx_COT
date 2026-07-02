@@ -1,4 +1,9 @@
-export default function UsersTable({ users, approveUser, rejectUser }) {
+export default function UsersTable({
+  users,
+  approveUser,
+  rejectUser,
+  makeAdmin,
+}) {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-700 bg-[#171b22]">
       <table className="w-full">
@@ -10,6 +15,8 @@ export default function UsersTable({ users, approveUser, rejectUser }) {
 
             <th className="p-4 text-left">Country</th>
 
+            <th className="p-4 text-center">Role</th>
+
             <th className="p-4 text-center">Status</th>
 
             <th className="p-4 text-center">Actions</th>
@@ -19,7 +26,7 @@ export default function UsersTable({ users, approveUser, rejectUser }) {
         <tbody>
           {users.length === 0 ? (
             <tr>
-              <td colSpan="5" className="text-center py-8 text-slate-400">
+              <td colSpan="6" className="py-8 text-center text-slate-400">
                 No users found.
               </td>
             </tr>
@@ -34,6 +41,18 @@ export default function UsersTable({ users, approveUser, rejectUser }) {
                 <td className="p-4">{user.email}</td>
 
                 <td className="p-4">{user.country}</td>
+
+                <td className="p-4 text-center">
+                  {user.role === "admin" ? (
+                    <span className="rounded-full bg-sky-500/20 px-3 py-1 text-sm font-semibold text-sky-400">
+                      Administrator
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-slate-700 px-3 py-1 text-sm">
+                      Member
+                    </span>
+                  )}
+                </td>
 
                 <td className="p-4 text-center">
                   <span
@@ -51,20 +70,56 @@ export default function UsersTable({ users, approveUser, rejectUser }) {
                 </td>
 
                 <td className="p-4">
-                  <div className="flex justify-center gap-3">
-                    <button
-                      onClick={() => approveUser(user._id)}
-                      className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition"
-                    >
-                      Approve
-                    </button>
+                  <div className="flex justify-center gap-2 flex-wrap">
+                    {/* Pending */}
 
-                    <button
-                      onClick={() => rejectUser(user._id)}
-                      className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition"
-                    >
-                      Reject
-                    </button>
+                    {user.status === "pending" && (
+                      <>
+                        <button
+                          onClick={() => approveUser(user._id)}
+                          className="rounded-lg bg-green-600 px-4 py-2 transition hover:bg-green-700"
+                        >
+                          Approve
+                        </button>
+
+                        <button
+                          onClick={() => rejectUser(user._id)}
+                          className="rounded-lg bg-red-600 px-4 py-2 transition hover:bg-red-700"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+
+                    {/* Approved */}
+
+                    {user.status === "approved" && user.role !== "admin" && (
+                      <button
+                        onClick={() => makeAdmin(user._id)}
+                        className="rounded-lg bg-sky-600 px-4 py-2 transition hover:bg-sky-700"
+                      >
+                        Make Admin
+                      </button>
+                    )}
+
+                    {/* Already Admin */}
+
+                    {user.role === "admin" && (
+                      <span className="rounded-lg bg-sky-500/20 px-4 py-2 font-semibold text-sky-400">
+                        Administrator ✓
+                      </span>
+                    )}
+
+                    {/* Rejected */}
+
+                    {user.status === "rejected" && (
+                      <button
+                        onClick={() => approveUser(user._id)}
+                        className="rounded-lg bg-yellow-600 px-4 py-2 transition hover:bg-yellow-700"
+                      >
+                        Approve Again
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

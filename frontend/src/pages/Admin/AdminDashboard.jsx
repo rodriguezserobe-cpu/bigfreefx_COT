@@ -3,12 +3,15 @@ import { useEffect, useState } from "react";
 import {
   getDashboardStats,
   getUsers,
-  approveUser as approveMember,
-  rejectUser as rejectMember,
+  approveUser,
+  rejectUser,
+  makeAdmin,
 } from "../../api/admin";
 
-import StatCard from "../../components/Admin/StatCard";
-import UsersTable from "../../components/Admin/UsersTable";
+import AdminLayout from "../../components/admin/AdminLayout";
+import StatCard from "../../components/admin/StatCard";
+import UsersTable from "../../components/admin/UsersTable";
+import toast from "react-hot-toast";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -19,8 +22,11 @@ export default function AdminDashboard() {
   });
 
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  // all | pending | approved | rejected
+  const [filter, setFilter] = useState("all");
 
   const loadDashboard = async () => {
     try {
@@ -33,41 +39,64 @@ export default function AdminDashboard() {
       setUsers(allUsers);
     } catch (error) {
       console.error(error);
-      alert("Failed to load dashboard.");
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    const load = async () => {
-      await loadDashboard();
-    };
+    (async () => {
+      try {
+        setLoading(true);
 
-    load();
+        const dashboardStats = await getDashboardStats();
+        const allUsers = await getUsers();
+
+        setStats(dashboardStats);
+        setUsers(allUsers);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   const handleApprove = async (id) => {
-    try {
-      await approveMember(id);
-      await loadDashboard();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to approve user.");
-    }
+    const user = users.find((u) => u._id === id);
+
+    if (!window.confirm(`Approve ${user.fullName}?`)) return;
+
+    await approveUser(id);
+    toast.success("User approved successfully");
+    loadDashboard();
   };
 
   const handleReject = async (id) => {
-    try {
-      await rejectMember(id);
-      await loadDashboard();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to reject user.");
-    }
+    const user = users.find((u) => u._id === id);
+
+    if (!window.confirm(`Reject ${user.fullName}?`)) return;
+
+    await rejectUser(id);
+    toast.success("User rejected successfully");
+    loadDashboard();
+  };
+
+  const handleMakeAdmin = async (id) => {
+    const user = users.find((u) => u._id === id);
+
+    if (!window.confirm(`${user.fullName} will become an administrator.`))
+      return;
+
+    await makeAdmin(id);
+    toast.success(`${user.fullName} is now an administrator`);
+    loadDashboard();
   };
 
   const filteredUsers = users.filter((user) => {
+    if (filter !== "all" && user.status !== filter) {
+      return false;
+    }
+
     return (
       user.fullName.toLowerCase().includes(search.toLowerCase()) ||
       user.email.toLowerCase().includes(search.toLowerCase()) ||
@@ -75,74 +104,93 @@ export default function AdminDashboard() {
     );
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0f1117] flex items-center justify-center text-white text-2xl">
-        Loading Admin Dashboard...
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#0f1117] text-white p-10">
-      {/* Header */}
+    <AdminLayout>
+      <div className="space-y-8">
+        {/* Statistics Cards */}
 
-      <div className="flex justify-between items-center mb-10">
-        <h1 className="text-4xl font-bold text-sky-400">Admin Dashboard</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <StatCard
+            title="Total Members"
+            value={stats.totalMembers}
+            color="sky"
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
+          />
 
-        <button
-          onClick={loadDashboard}
-          className="bg-sky-600 hover:bg-sky-700 px-6 py-3 rounded-xl font-semibold transition"
-        >
-          Refresh
-        </button>
+          <StatCard
+            title="Pending"
+            value={stats.pendingUsers}
+            color="yellow"
+            active={filter === "pending"}
+            onClick={() => setFilter("pending")}
+          />
+
+          <StatCard
+            title="Approved"
+            value={stats.approvedUsers}
+            color="green"
+            active={filter === "approved"}
+            onClick={() => setFilter("approved")}
+          />
+
+          <StatCard
+            title="Rejected"
+            value={stats.rejectedUsers}
+            color="red"
+            active={filter === "rejected"}
+            onClick={() => setFilter("rejected")}
+          />
+        </div>
+
+        {/* Users Section */}
+
+        <div className="bg-[#171b22] border border-slate-700 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold">
+                {filter === "all" && "All Members"}
+                {filter === "pending" && "Pending Members"}
+                {filter === "approved" && "Approved Members"}
+                {filter === "rejected" && "Rejected Members"}
+              </h2>
+
+              <p className="text-slate-400 mt-1">
+                {filteredUsers.length} member(s)
+              </p>
+            </div>
+
+            <button
+              onClick={loadDashboard}
+              disabled={loading}
+              className="bg-sky-600 hover:bg-sky-700 disabled:opacity-60 px-5 py-2 rounded-xl transition"
+            >
+              {loading ? "Refreshing..." : "🔄 Refresh"}
+            </button>
+          </div>
+
+          <input
+            type="text"
+            placeholder="Search members..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full mb-6 bg-[#111827] border border-slate-700 rounded-xl px-5 py-3 outline-none focus:border-sky-500"
+          />
+
+          {loading ? (
+            <div className="text-center py-12 text-slate-400">
+              Loading members...
+            </div>
+          ) : (
+            <UsersTable
+              users={filteredUsers}
+              approveUser={handleApprove}
+              rejectUser={handleReject}
+              makeAdmin={handleMakeAdmin}
+            />
+          )}
+        </div>
       </div>
-
-      {/* Statistics */}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <StatCard
-          title="Total Members"
-          value={stats.totalMembers}
-          color="sky"
-        />
-
-        <StatCard
-          title="Pending Users"
-          value={stats.pendingUsers}
-          color="yellow"
-        />
-
-        <StatCard
-          title="Approved Users"
-          value={stats.approvedUsers}
-          color="green"
-        />
-
-        <StatCard
-          title="Rejected Users"
-          value={stats.rejectedUsers}
-          color="red"
-        />
-      </div>
-
-      {/* Search */}
-
-      <input
-        type="text"
-        placeholder="Search members..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full mb-8 bg-[#171b22] border border-slate-700 rounded-xl px-5 py-4 outline-none focus:border-sky-500"
-      />
-
-      {/* Users */}
-
-      <UsersTable
-        users={filteredUsers}
-        approveUser={handleApprove}
-        rejectUser={handleReject}
-      />
-    </div>
+    </AdminLayout>
   );
 }

@@ -45,7 +45,11 @@ export default function LoginForm({ setAuthMode }) {
 
       setAuthMode(null);
 
-      navigate("/dashboard");
+      if (res.data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed.");
     } finally {
