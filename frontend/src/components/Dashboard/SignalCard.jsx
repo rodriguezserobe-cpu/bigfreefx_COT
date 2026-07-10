@@ -1,20 +1,26 @@
 const SignalCard = ({ latest, marketName }) => {
-  const strength = Math.min(100, Math.round(Math.abs(latest.net) / 5000));
+  if (!latest) return null;
 
-  const bullish = latest?.bias === "Bullish";
+  const net = latest.net || 0;
+  const openInterest = latest.openInterest || 1;
 
-  // Temporary calculations until backend provides
-  // real Commercial / Non-Commercial / Retail data
-  const commercials = parseFloat(latest.longPct);
-  const nonCommercials = parseFloat(latest.shortPct);
-  const retail = Math.max(0, 100 - commercials - nonCommercials);
+  const strength = Math.min(
+    100,
+    Math.round((Math.abs(net) / openInterest) * 100),
+  );
 
+  const bullish = latest.bias === "Bullish";
+
+  const selectedLong = Number(latest.longPct || 0);
+  const selectedShort = Number(latest.shortPct || 0);
+
+  const retail = Math.max(0, 100 - selectedLong - selectedShort);
   return (
-    <div className=" top bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-5 mb-6">
+    <div className="bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-5 mb-6">
       <h2 className="text-3xl font-bold mb-6">BIGFREE FX SIGNAL</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* LEFT SIDE */}
+        {/* LEFT */}
         <div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div>
@@ -24,6 +30,7 @@ const SignalCard = ({ latest, marketName }) => {
 
             <div>
               <p className="text-gray-400 text-sm">Bias</p>
+
               <p className={bullish ? "text-green-400" : "text-red-400"}>
                 {bullish ? "Bullish 🟢" : "Bearish 🔴"}
               </p>
@@ -36,6 +43,7 @@ const SignalCard = ({ latest, marketName }) => {
 
             <div>
               <p className="text-gray-400 text-sm">Action</p>
+
               <p className={bullish ? "text-green-400" : "text-red-400"}>
                 {bullish ? "BUY" : "SELL"}
               </p>
@@ -58,13 +66,14 @@ const SignalCard = ({ latest, marketName }) => {
                 style={{
                   width: `${strength}%`,
                 }}
-              ></div>
+              />
             </div>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t sm:border-t-0 sm:border-l border-gray-700 pt-6 sm:pt-0 sm:pl-6">
+        {/* RIGHT */}
+
+        <div className="grid grid-cols-3 gap-4 border-l border-gray-700 pl-6">
           <div className="text-center">
             <p className="text-gray-400 text-sm">Commercials</p>
 
@@ -73,11 +82,13 @@ const SignalCard = ({ latest, marketName }) => {
             <div className="w-full bg-gray-700 h-2 rounded-full">
               <div
                 className="bg-green-500 h-2 rounded-full"
-                style={{ width: `${commercials}%` }}
+                style={{
+                  width: `${selectedLong.toFixed(1)}%`,
+                }}
               />
             </div>
 
-            <p className="mt-2">{commercials}%</p>
+            <p className="mt-2">{selectedLong.toFixed(1)}%</p>
           </div>
 
           <div className="text-center">
@@ -88,11 +99,13 @@ const SignalCard = ({ latest, marketName }) => {
             <div className="w-full bg-gray-700 h-2 rounded-full">
               <div
                 className="bg-red-500 h-2 rounded-full"
-                style={{ width: `${nonCommercials}%` }}
+                style={{
+                  width: `${selectedShort.toFixed(1)}%`,
+                }}
               />
             </div>
 
-            <p className="mt-2">{nonCommercials}%</p>
+            <p className="mt-2">{selectedShort.toFixed(1)}%</p>
           </div>
 
           <div className="text-center">
@@ -103,7 +116,9 @@ const SignalCard = ({ latest, marketName }) => {
             <div className="w-full bg-gray-700 h-2 rounded-full">
               <div
                 className="bg-yellow-500 h-2 rounded-full"
-                style={{ width: `${retail}%` }}
+                style={{
+                  width: `${retail.toFixed(1)}%`,
+                }}
               />
             </div>
 

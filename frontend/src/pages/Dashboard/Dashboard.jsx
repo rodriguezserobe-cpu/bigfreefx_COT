@@ -11,24 +11,50 @@ import NetPositionChart from "../../components/Dashboard/NetPositionChart";
 import WeeklyChangeCard from "../../components/Dashboard/WeeklyChangeCard";
 import StrengthRanking from "../../components/Dashboard/StrengthRanking";
 import WeaknessRanking from "../../components/Dashboard/WeaknessRanking";
+import MarketScanner from "../../components/Dashboard/MarketScanner";
 
 import { markets } from "../../data/markets";
 
 export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user"));
 
+  const [marketType, setMarketType] = useState("FOREX");
   const [market, setMarket] = useState("EUR");
+  const [group, setGroup] = useState("nonCommercial");
+
   const [search, setSearch] = useState("");
   const [cotData, setCotData] = useState({});
+  const [allMarkets, setAllMarkets] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/cot/live")
+    console.log("Frontend Group:", group);
+
+    setLoading(true);
+
+    fetch(
+      `http://localhost:5000/api/cot/live?marketType=${marketType}&asset=${market}&group=${group}`,
+    )
       .then((res) => res.json())
       .then((response) => {
         setCotData(response);
       })
+      .catch((err) => console.error(err))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [marketType, market, group]);
+
+  useEffect(() => {
+    fetch(
+      `http://localhost:5000/api/cot/live?marketType=${marketType}&group=${group}`,
+    )
+      .then((res) => res.json())
+      .then((response) => {
+        setAllMarkets(response.latest || {});
+      })
       .catch((err) => console.error(err));
-  }, []);
+  }, [marketType, group]);
 
   const latest = cotData?.latest?.[market];
 
@@ -46,10 +72,27 @@ export default function Dashboard() {
         user={user}
       />
 
-      <Sidebar market={market} setMarket={setMarket} />
+      <Sidebar
+        marketType={marketType}
+        setMarketType={setMarketType}
+        market={market}
+        setMarket={setMarket}
+        group={group}
+        setGroup={setGroup}
+      />
 
       <div className="ml-52 flex-1 overflow-y-auto px-8 pt-32 pb-8">
-        {!latest ? (
+        {loading ? (
+          <div className="flex items-center justify-center h-[60vh]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-400 mx-auto"></div>
+
+              <p className="mt-4 text-sky-400 font-semibold text-lg">
+                Updating COT Data...
+              </p>
+            </div>
+          </div>
+        ) : !latest ? (
           <div className="flex items-center justify-center h-[60vh] text-xl">
             Loading COT Data...
           </div>
@@ -61,14 +104,16 @@ export default function Dashboard() {
 
             <COTTable data={cotData?.history?.[market] || []} />
 
+            <MarketScanner signals={cotData?.signals} />
+
             <NetPositionChart data={chartData} />
 
             <WeeklyChangeCard history={cotData?.history?.[market] || []} />
 
             <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <StrengthRanking latest={cotData?.latest || {}} />
+              <StrengthRanking latest={allMarkets} />
 
-              <WeaknessRanking latest={cotData?.latest || {}} />
+              <WeaknessRanking latest={allMarkets} />
             </div>
           </>
         )}

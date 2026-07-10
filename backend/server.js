@@ -6,9 +6,7 @@ import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-
-import { cotData } from "./data/cotData.js";
-import { fetchCFTCData } from "./services/cftcService.js";
+import cotRoutes from "./routes/cotRoutes.js";
 
 dotenv.config();
 
@@ -19,8 +17,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ================= ROOT =================
 app.get("/", (req, res) => {
-  res.send("BigFree FX Backend Running 🚀");
+  res.send("🚀 BigFree FX Backend Running");
 });
 
 // ================= AUTH =================
@@ -30,14 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 
 // ================= COT =================
-app.get("/api/cot", (req, res) => {
-  res.json(cotData);
-});
-
-app.get("/api/cot/live", async (req, res) => {
-  const data = await fetchCFTCData();
-  res.json(data);
-});
+app.use("/api/cot", cotRoutes);
 
 const PORT = process.env.PORT || 5000;
 

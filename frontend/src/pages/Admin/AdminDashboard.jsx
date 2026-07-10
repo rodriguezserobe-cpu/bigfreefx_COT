@@ -159,14 +159,6 @@ export default function AdminDashboard() {
                 {filteredUsers.length} member(s)
               </p>
             </div>
-
-            <button
-              onClick={loadDashboard}
-              disabled={loading}
-              className="bg-sky-600 hover:bg-sky-700 disabled:opacity-60 px-5 py-2 rounded-xl transition"
-            >
-              {loading ? "Refreshing..." : "🔄 Refresh"}
-            </button>
           </div>
 
           <input

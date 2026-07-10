@@ -34,7 +34,7 @@ export default function UsersTable({
             users.map((user) => (
               <tr
                 key={user._id}
-                className="border-t border-slate-700 hover:bg-[#20252f] transition"
+                className="border-t border-slate-700 odd:bg-[#171b22] even:bg-[#1b2028] hover:bg-[#253041] transition duration-200"
               >
                 <td className="p-4 font-medium">{user.fullName}</td>
 
@@ -93,15 +93,25 @@ export default function UsersTable({
 
                     {/* Approved */}
 
-                    {user.status === "approved" && user.role !== "admin" && (
-                      <button
-                        onClick={() => makeAdmin(user._id)}
-                        className="rounded-lg bg-sky-600 px-4 py-2 transition hover:bg-sky-700"
-                      >
-                        Make Admin
-                      </button>
-                    )}
+                    {/* Approved */}
 
+                    {user.status === "approved" && user.role !== "admin" && (
+                      <>
+                        <button
+                          onClick={() => makeAdmin(user._id)}
+                          className="rounded-lg bg-sky-600 px-4 py-2 transition hover:bg-sky-700"
+                        >
+                          Make Admin
+                        </button>
+
+                        <button
+                          onClick={() => rejectUser(user._id)}
+                          className="rounded-lg bg-red-600 px-4 py-2 transition hover:bg-red-700"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
                     {/* Already Admin */}
 
                     {user.role === "admin" && (

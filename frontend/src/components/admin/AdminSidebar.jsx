@@ -1,10 +1,4 @@
-import {
-  LayoutDashboard,
-  Users,
-  BarChart3,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { LayoutDashboard, BarChart3, Settings, LogOut } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -26,11 +20,7 @@ export default function AdminSidebar() {
       icon: LayoutDashboard,
       path: "/admin",
     },
-    {
-      title: "Members",
-      icon: Users,
-      path: "/admin/members",
-    },
+
     {
       title: "Open COT Dashboard",
       icon: BarChart3,

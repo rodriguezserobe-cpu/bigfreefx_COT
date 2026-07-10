@@ -1,10 +1,10 @@
 const WeaknessRanking = ({ latest }) => {
   const ranking = Object.entries(latest)
-    .sort((a, b) => a[1].net - b[1].net)
+    .sort((a, b) => (a[1]?.net ?? 0) - (b[1]?.net ?? 0))
     .slice(0, 5);
 
   return (
-    <div className=" bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-5">
+    <div className="bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-5">
       <h2 className="text-xl font-bold mb-4">Weakest Markets</h2>
 
       {ranking.map(([code, item], index) => (
@@ -16,7 +16,9 @@ const WeaknessRanking = ({ latest }) => {
             #{index + 1} {code}
           </span>
 
-          <span className="text-red-400">{item.net.toLocaleString()}</span>
+          <span className="text-red-400">
+            {(item?.net ?? 0).toLocaleString()}
+          </span>
         </div>
       ))}
     </div>
