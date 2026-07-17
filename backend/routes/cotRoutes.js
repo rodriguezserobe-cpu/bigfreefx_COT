@@ -25,15 +25,16 @@ router.get("/", async (req, res) => {
     });
   }
 });
-
 // ==========================================
 // Live Dashboard Data
 // ==========================================
 router.get("/live", async (req, res) => {
   try {
     console.log("LIVE ROUTE HIT");
-    await saveLatestReportsToDB();
-    console.log("SAVE FUNCTION FINISHED");
+
+    // DON'T download CFTC data every request
+    // await saveLatestReportsToDB();
+
     const { marketType, asset, group } = req.query;
 
     const data = await buildLiveCOTData({
@@ -54,5 +55,4 @@ router.get("/live", async (req, res) => {
     });
   }
 });
-
 export default router;

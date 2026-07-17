@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  User,
-  Settings,
-  LayoutDashboard,
+  // User,
+  //Settings,
+  //LayoutDashboard,
   LogOut,
   ChevronDown,
 } from "lucide-react";
@@ -40,6 +40,7 @@ export default function ProfileMenu({ user }) {
 
       {open && (
         <div className="absolute right-0 mt-3 w-64 bg-[#171b22] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50">
+          {/*
           <button className="w-full flex items-center gap-3 px-5 py-4 hover:bg-[#222831] transition">
             <User size={18} />
             My Profile
@@ -54,6 +55,7 @@ export default function ProfileMenu({ user }) {
             <Settings size={18} />
             Settings
           </button>
+          */}
 
           <hr className="border-slate-700" />
 

@@ -8,9 +8,9 @@ import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cotRoutes from "./routes/cotRoutes.js";
 
-dotenv.config();
+import { saveLatestReportsToDB } from "./services/cftcService.js";
 
-connectDB();
+dotenv.config();
 
 const app = express();
 
@@ -33,6 +33,20 @@ app.use("/api/cot", cotRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    console.log("📥 Downloading latest CFTC report...");
+    await saveLatestReportsToDB();
+    console.log("✅ Latest CFTC report saved.");
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server startup failed:", error);
+  }
+};
+
+startServer();

@@ -3,7 +3,7 @@ const MarketSection = ({ title, data }) => {
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-bold text-sky-400 mb-4">{title}</h2>
+      <h2 className="text-xl font-bold text-sky-400 mt-6">{title}</h2>
 
       <div className="bg-[#0d1117]/90 backdrop-blur-xl border border-sky-500/20 rounded-lg overflow-hidden">
         <table className="w-full">
@@ -12,7 +12,7 @@ const MarketSection = ({ title, data }) => {
               <th className="text-left p-3">Market</th>
               <th className="text-center p-3">Signal</th>
               <th className="text-center p-3">Confidence</th>
-              <th className="text-right p-3">Strength</th>
+              <th className="text-right p-3">Strength Score</th>
             </tr>
           </thead>
 
@@ -50,20 +50,50 @@ const MarketSection = ({ title, data }) => {
   );
 };
 
-const MarketScanner = ({ signals }) => {
+const MarketScanner = ({ signals, marketType, asset }) => {
   if (!signals) return null;
 
-  return (
-    <>
-      <MarketSection title="FOREX" data={signals.forex} />
+  let filteredData = [];
+  let title = "";
 
-      <MarketSection title="METALS" data={signals.metals} />
+  switch (marketType) {
+    case "FOREX":
+      title = "FOREX";
 
-      <MarketSection title="INDICES" data={signals.indices} />
+      filteredData = (signals.forex || []).filter((item) =>
+        item.symbol.includes(asset),
+      );
+      break;
 
-      <MarketSection title="CRYPTO" data={signals.crypto} />
-    </>
-  );
+    case "METALS":
+      title = "METALS";
+
+      filteredData = (signals.metals || []).filter((item) =>
+        item.symbol.includes(asset),
+      );
+      break;
+
+    case "INDICES":
+      title = "INDICES";
+
+      filteredData = (signals.indices || []).filter(
+        (item) => item.symbol === asset,
+      );
+      break;
+
+    case "CRYPTO":
+      title = "CRYPTO";
+
+      filteredData = (signals.crypto || []).filter((item) =>
+        item.symbol.includes(asset),
+      );
+      break;
+
+    default:
+      filteredData = [];
+  }
+
+  return <MarketSection title={title} data={filteredData} />;
 };
 
 export default MarketScanner;

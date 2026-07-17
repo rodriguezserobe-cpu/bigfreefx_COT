@@ -29,7 +29,11 @@ const COTTable = ({ data = [] }) => {
                 className="text-center bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl"
               >
                 <td className="p-3">
-                  {new Date(row.reportDate).toLocaleDateString()}
+                  {new Date(row.reportDate).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </td>
 
                 <td className="p-3 bg-green-300 text-black">

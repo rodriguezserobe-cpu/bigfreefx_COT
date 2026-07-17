@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import Navbar from "../../components/Home/Navbar";
 import Hero from "../../components/Home/Hero";
@@ -11,24 +11,45 @@ import Footer from "../../components/Home/Footer";
 export default function Home() {
   const [authMode, setAuthMode] = useState(null);
 
+  const topRef = useRef(null);
+  const heroRef = useRef(null);
+  const previewRef = useRef(null);
+  const howRef = useRef(null);
+  const contactRef = useRef(null);
+  const formRef = useRef(null);
+
   return (
-    <div className="min-h-screen bg-[#111111] text-white">
+    <div ref={topRef} className="min-h-screen bg-[#111111] text-white">
       <Navbar
+        topRef={topRef}
+        heroRef={heroRef}
+        previewRef={previewRef}
+        howRef={howRef}
+        contactRef={contactRef}
+        formRef={formRef}
         openLogin={() => setAuthMode("login")}
         openRegister={() => setAuthMode("register")}
       />
 
-      <Hero authMode={authMode} setAuthMode={setAuthMode} />
+      <div ref={heroRef}>
+        <Hero authMode={authMode} setAuthMode={setAuthMode} />
+      </div>
 
       <FloatingCards />
 
-      <DashboardPreview />
+      <div ref={previewRef}>
+        <DashboardPreview />
+      </div>
 
       <WhyChoose />
 
-      <HowItWorks />
+      <div ref={howRef}>
+        <HowItWorks />
+      </div>
 
-      <Footer />
+      <div ref={contactRef}>
+        <Footer />
+      </div>
     </div>
   );
 }

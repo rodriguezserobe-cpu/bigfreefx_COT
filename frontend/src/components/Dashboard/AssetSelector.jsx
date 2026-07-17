@@ -1,11 +1,11 @@
 const marketAssets = {
-  FOREX: ["EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF", "DXY"],
+  FOREX: ["EUR", "GBP", "USD", "JPY", "AUD", "NZD", "CAD", "CHF"],
 
-  METALS: ["XAUUSD", "SILVER"],
+  METALS: ["XAU", "XAG"],
 
   INDICES: ["US30", "NAS100", "SPX500"],
 
-  CRYPTO: ["BTCUSD"],
+  CRYPTO: ["BTC"],
 
   AGRICULTURE: [],
 

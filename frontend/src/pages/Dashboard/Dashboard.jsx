@@ -18,8 +18,33 @@ import { markets } from "../../data/markets";
 export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const [marketType, setMarketType] = useState("FOREX");
+  const [marketType, setMarketTypeState] = useState("FOREX");
   const [market, setMarket] = useState("EUR");
+
+  const setMarketType = (type) => {
+    setMarketTypeState(type);
+
+    switch (type) {
+      case "FOREX":
+        setMarket("EUR");
+        break;
+
+      case "METALS":
+        setMarket("XAU");
+        break;
+
+      case "INDICES":
+        setMarket("US30");
+        break;
+
+      case "CRYPTO":
+        setMarket("BTC");
+        break;
+
+      default:
+        setMarket("EUR");
+    }
+  };
   const [group, setGroup] = useState("nonCommercial");
 
   const [search, setSearch] = useState("");
@@ -28,9 +53,24 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+  }, []);
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [marketType, market, group]);
+
+  useEffect(() => {
     console.log("Frontend Group:", group);
 
     setLoading(true);
+
+    // Clear previous market immediately
+    setCotData({});
 
     fetch(
       `http://localhost:5000/api/cot/live?marketType=${marketType}&asset=${market}&group=${group}`,
@@ -58,7 +98,10 @@ export default function Dashboard() {
 
   const latest = cotData?.latest?.[market];
 
-  const chartData = [...(cotData?.history?.[market] || [])].reverse();
+  const chartData = (cotData?.history?.[market] || []).map((item) => ({
+    date: new Date(item.reportDate).toLocaleDateString(),
+    net: item.net,
+  }));
 
   const marketName =
     markets.find((item) => item.code === market)?.name || market;
@@ -70,6 +113,7 @@ export default function Dashboard() {
         setSearch={setSearch}
         setMarket={setMarket}
         user={user}
+        latestDate={latest?.reportDate}
       />
 
       <Sidebar
@@ -104,7 +148,11 @@ export default function Dashboard() {
 
             <COTTable data={cotData?.history?.[market] || []} />
 
-            <MarketScanner signals={cotData?.signals} />
+            <MarketScanner
+              signals={cotData?.signals}
+              marketType={marketType}
+              asset={market}
+            />
 
             <NetPositionChart data={chartData} />
 

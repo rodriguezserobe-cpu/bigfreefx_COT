@@ -297,16 +297,13 @@ const MARKET_TO_CURRENCY = {
   "DJIA x $5": "US30",
   "E-MINI S&P 500": "SPX500",
   "NASDAQ MINI": "NAS100",
-  "NASDAQ-100 Consolidated": "NAS100",
-  "MICRO E-MINI NASDAQ-100 INDEX": "NAS100",
 
   // Crypto
   BITCOIN: "BTC",
   "MICRO BITCOIN": "BTC",
 };
-
 export const buildCurrencyScores = (cotData, group = "nonCommercial") => {
-  const rawScores = {};
+  const scores = {};
 
   cotData.forEach((market) => {
     const currency = MARKET_TO_CURRENCY[market.contract_market_name];
@@ -329,27 +326,20 @@ export const buildCurrencyScores = (cotData, group = "nonCommercial") => {
 
     const openInterest = Number(market.open_interest_all || 1);
 
-    const net = long - short;
+    const longPct = (long / openInterest) * 100;
+    const shortPct = (short / openInterest) * 100;
 
-    const normalized = (net / openInterest) * 100;
+    // Currency strength = Net Percentage
+    const netPct = Number((longPct - shortPct).toFixed(2));
 
-    rawScores[currency] = normalized;
+    scores[currency] = netPct;
   });
 
-  const maxAbs = Math.max(
-    ...Object.values(rawScores).map((value) => Math.abs(value)),
-    1,
-  );
-
-  const scores = {};
-
-  Object.entries(rawScores).forEach(([currency, value]) => {
-    scores[currency] = Number(((value / maxAbs) * 100).toFixed(2));
-  });
-  console.log("Currency Scores for", group, scores);
+  console.log(`Currency Net % (${group})`, scores);
 
   return scores;
 };
+
 // ==========================================
 // PART 5 - ADVANCED CURRENCY SCORING
 // ==========================================
@@ -400,55 +390,92 @@ export const calculateAdvancedCurrencyScores = (cotData) => {
 // ==========================================
 
 export const fetchCFTCData = async () => {
-  // Step 1: Get the newest report date
-  const latestResponse = await fetch(
-    "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$select=report_date_as_yyyy_mm_dd&$order=report_date_as_yyyy_mm_dd DESC&$limit=1",
+  // STEP 1: Get the latest 12 unique report dates
+  const datesResponse = await fetch(
+    "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$select=distinct%20report_date_as_yyyy_mm_dd&$order=report_date_as_yyyy_mm_dd%20DESC&$limit=15",
   );
 
-  if (!latestResponse.ok) {
-    throw new Error("Failed to fetch latest report date.");
+  if (!datesResponse.ok) {
+    throw new Error("Failed to fetch report dates.");
   }
 
-  const latest = await latestResponse.json();
+  const datesData = await datesResponse.json();
 
-  const latestDate = latest[0].report_date_as_yyyy_mm_dd;
+  const dates = datesData
+    .map((d) => d.report_date_as_yyyy_mm_dd)
+    .filter(Boolean);
 
-  console.log("Latest CFTC report:", latestDate);
+  console.log("Downloading report dates:", dates);
 
-  // Step 2: Fetch ONLY that week's reports
-  const reportResponse = await fetch(
-    `https://publicreporting.cftc.gov/resource/6dca-aqww.json?report_date_as_yyyy_mm_dd=${latestDate}`,
-  );
+  // STEP 2: Download every report for those dates
+  const allReports = [];
 
-  if (!reportResponse.ok) {
-    throw new Error("Failed to fetch latest COT report.");
+  for (const date of dates) {
+    const response = await fetch(
+      `https://publicreporting.cftc.gov/resource/6dca-aqww.json?report_date_as_yyyy_mm_dd=${date}`,
+    );
+
+    if (!response.ok) continue;
+
+    const reports = await response.json();
+
+    allReports.push(...reports);
   }
 
-  const data = await reportResponse.json();
+  console.log(`Downloaded ${allReports.length} reports`);
 
-  console.log(`Downloaded ${data.length} reports`);
-
-  return data;
+  return allReports;
 };
+
 // ==========================================
 // BUILD LIVE DASHBOARD DATA
 // ==========================================
 
 export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
   console.log("Selected Group:", group);
-  const data = await fetchCFTCData();
 
-  // Keep only supported BigFree FX markets
-  const filteredData = data.filter(
-    (report) => MARKET_TO_CURRENCY[report.contract_market_name],
-  );
+  const dbReports = await COTReport.find({}).sort({ reportDate: -1 }).lean();
 
-  // Sort newest → oldest
-  filteredData.sort(
-    (a, b) =>
-      new Date(b.report_date_as_yyyy_mm_dd) -
-      new Date(a.report_date_as_yyyy_mm_dd),
-  );
+  // -----------------------------
+  // Build ALL reports first
+  // -----------------------------
+  const allReports = dbReports.map((report) => ({
+    contract_market_name: report.market,
+    report_date_as_yyyy_mm_dd: report.reportDate,
+    open_interest_all: report.openInterest,
+
+    comm_positions_long_all: report.commercials.long,
+    comm_positions_short_all: report.commercials.short,
+
+    noncomm_positions_long_all: report.nonCommercials.long,
+    noncomm_positions_short_all: report.nonCommercials.short,
+
+    nonrept_positions_long_all: report.retail.long,
+    nonrept_positions_short_all: report.retail.short,
+  }));
+
+  // -----------------------------
+  // Build Currency Scores from ALL currencies
+  // -----------------------------
+  const currencyScores = buildCurrencyScores(allReports, group);
+
+  // -----------------------------
+  // Build ALL signals
+  // -----------------------------
+  const signals = calculateAllMarketSignals(currencyScores);
+
+  // -----------------------------
+  // Filter only for charts/tables
+  // -----------------------------
+  const filteredData = allReports.filter((report) => {
+    const currency = MARKET_TO_CURRENCY[report.contract_market_name];
+
+    if (!currency) return false;
+
+    if (asset && currency !== asset) return false;
+
+    return true;
+  });
 
   const latest = {};
   const history = {};
@@ -457,9 +484,6 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
     const currency = MARKET_TO_CURRENCY[report.contract_market_name];
 
     if (!currency) return;
-
-    // If an asset was selected, only process that asset
-    if (asset && currency !== asset) return;
 
     const analysis = analyzeCOT(report, currency, group);
 
@@ -470,24 +494,16 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
     }
 
     history[currency].push(analysis);
-
-    if (
-      !latest[currency] ||
-      new Date(analysis.reportDate) > new Date(latest[currency].reportDate)
-    ) {
-      latest[currency] = analysis;
-    }
   });
 
   Object.keys(history).forEach((currency) => {
-    history[currency].sort(
-      (a, b) => new Date(b.reportDate) - new Date(a.reportDate),
-    );
+    history[currency] = history[currency]
+      .sort((a, b) => new Date(b.reportDate) - new Date(a.reportDate))
+      .slice(0, 15);
+
+    latest[currency] = history[currency][0];
   });
 
-  const currencyScores = buildCurrencyScores(filteredData, group);
-
-  const signals = calculateAllMarketSignals(currencyScores);
   return {
     latest,
     history,
@@ -497,27 +513,13 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
     group,
   };
 };
-
 // ==========================================
 // SAVE LATEST REPORTS TO MONGODB
 // ==========================================
 
 export const saveLatestReportsToDB = async () => {
-  const data = await fetchCFTCData();
+  const reports = await fetchCFTCData();
 
-  // Get the newest report date
-  const latestDate = data.reduce((latest, report) => {
-    return new Date(report.report_date_as_yyyy_mm_dd) > new Date(latest)
-      ? report.report_date_as_yyyy_mm_dd
-      : latest;
-  }, data[0].report_date_as_yyyy_mm_dd);
-
-  // Latest week's reports
-  const latestReports = data.filter(
-    (report) => report.report_date_as_yyyy_mm_dd === latestDate,
-  );
-
-  // Markets supported by BigFree FX
   const ALLOWED_MARKETS = [
     "EURO FX",
     "BRITISH POUND",
@@ -526,35 +528,96 @@ export const saveLatestReportsToDB = async () => {
     "NZ DOLLAR",
     "CANADIAN DOLLAR",
     "SWISS FRANC",
-
+    "USD INDEX",
     "GOLD",
     "SILVER",
-
-    "USD INDEX",
-
     "DJIA x $5",
     "E-MINI S&P 500",
-    "NASDAQ-100 Consolidated",
     "NASDAQ MINI",
+    "NASDAQ-100 Consolidated",
     "MICRO E-MINI NASDAQ-100 INDEX",
-
     "BITCOIN",
     "MICRO BITCOIN",
   ];
 
-  const filteredReports = latestReports.filter((report) =>
+  const filteredReports = reports.filter((report) =>
     ALLOWED_MARKETS.includes(report.contract_market_name),
   );
 
-  console.log("===== BIGFREE FX MARKETS =====");
+  for (const report of filteredReports) {
+    const openInterest = Number(report.open_interest_all || 0);
 
-  filteredReports.forEach((report) => {
-    console.log(report.contract_market_name);
-  });
+    const buildGroup = (long, short, changeLong, changeShort) => {
+      const l = Number(long || 0);
+      const s = Number(short || 0);
 
-  console.log(
-    `Found ${filteredReports.length} BigFree FX markets for latest report (${latestDate})`,
-  );
+      return {
+        long: l,
+        short: s,
+        changeLong: Number(changeLong || 0),
+        changeShort: Number(changeShort || 0),
+        longPercent: openInterest ? (l / openInterest) * 100 : 0,
+        shortPercent: openInterest ? (s / openInterest) * 100 : 0,
+        netPosition: l - s,
+        bias:
+          l - s > 20000 ? "Bullish" : l - s < -20000 ? "Bearish" : "Neutral",
+      };
+    };
 
-  return filteredReports;
+    let category = "FOREX";
+
+    if (["GOLD", "SILVER"].includes(report.contract_market_name))
+      category = "METALS";
+
+    if (
+      [
+        "DJIA x $5",
+        "E-MINI S&P 500",
+        "NASDAQ MINI",
+        "NASDAQ-100 Consolidated",
+        "MICRO E-MINI NASDAQ-100 INDEX",
+      ].includes(report.contract_market_name)
+    )
+      category = "INDICES";
+
+    if (["BITCOIN", "MICRO BITCOIN"].includes(report.contract_market_name))
+      category = "CRYPTO";
+
+    await COTReport.updateOne(
+      {
+        market: report.contract_market_name,
+        reportDate: new Date(report.report_date_as_yyyy_mm_dd),
+      },
+      {
+        market: report.contract_market_name,
+        category,
+        reportDate: new Date(report.report_date_as_yyyy_mm_dd),
+        openInterest,
+
+        commercials: buildGroup(
+          report.comm_positions_long_all,
+          report.comm_positions_short_all,
+          report.change_in_comm_long_all,
+          report.change_in_comm_short_all,
+        ),
+
+        nonCommercials: buildGroup(
+          report.noncomm_positions_long_all,
+          report.noncomm_positions_short_all,
+          report.change_in_noncomm_long_all,
+          report.change_in_noncomm_short_all,
+        ),
+
+        retail: buildGroup(
+          report.nonrept_positions_long_all,
+          report.nonrept_positions_short_all,
+          report.change_in_nonrept_long_all,
+          report.change_in_nonrept_short_all,
+        ),
+      },
+      { upsert: true },
+    );
+  }
+
+  console.log(`Saved ${filteredReports.length} reports to MongoDB.`);
 };

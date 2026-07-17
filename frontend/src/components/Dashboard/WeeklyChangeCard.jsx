@@ -4,8 +4,8 @@ const WeeklyChangeCard = ({ history }) => {
   const current = history[0];
   const previous = history[1];
 
-  const currentNet = current?.nonCommercial?.net ?? 0;
-  const previousNet = previous?.nonCommercial?.net ?? 0;
+  const currentNet = current?.net ?? 0;
+  const previousNet = previous?.net ?? 0;
 
   const change = currentNet - previousNet;
 
@@ -28,6 +28,7 @@ const WeeklyChangeCard = ({ history }) => {
           <p className="text-gray-400">Change</p>
 
           <p className={change >= 0 ? "text-green-400" : "text-red-400"}>
+            {change >= 0 ? "+" : ""}
             {change.toLocaleString()}
           </p>
         </div>

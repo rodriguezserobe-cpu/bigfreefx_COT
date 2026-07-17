@@ -2,7 +2,7 @@ import logo from "../../assets/logo.png";
 import { markets } from "../../data/markets";
 import ProfileMenu from "./ProfileMenu";
 
-const Header = ({ search, setSearch, setMarket, user }) => {
+const Header = ({ search, setSearch, setMarket, user, latestDate }) => {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl">
       <div className="max-w-7xl mx-auto h-24 px-8 flex items-center justify-between">
@@ -64,7 +64,16 @@ const Header = ({ search, setSearch, setMarket, user }) => {
               <span className="text-green-400 font-semibold">LIVE</span>
             </div>
 
-            <p className="text-xs text-slate-400">Updated 23 Jun 2026</p>
+            <p className="text-xs text-slate-400">
+              Updated{" "}
+              {latestDate
+                ? new Date(latestDate).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : "Loading..."}
+            </p>
           </div>
 
           <ProfileMenu user={user} />
