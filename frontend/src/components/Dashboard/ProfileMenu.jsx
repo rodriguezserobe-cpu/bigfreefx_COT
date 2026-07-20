@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  // User,
-  //Settings,
-  //LayoutDashboard,
-  LogOut,
-  ChevronDown,
-} from "lucide-react";
+import { LogOut, ChevronDown } from "lucide-react";
 
 export default function ProfileMenu({ user }) {
   const [open, setOpen] = useState(false);
@@ -15,7 +9,6 @@ export default function ProfileMenu({ user }) {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
     navigate("/");
   };
 
@@ -23,45 +16,25 @@ export default function ProfileMenu({ user }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-3 bg-[#1b1b1b] border border-slate-700 rounded-xl px-4 py-2 hover:border-sky-500 transition"
+        className="flex items-center gap-2 bg-[#1b1b1b] border border-slate-700 rounded-xl px-2 py-2 lg:px-3 hover:border-sky-500 transition"
       >
-        <div className="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center font-bold">
+        <div className="w-9 h-9 rounded-full bg-sky-500 flex items-center justify-center font-bold">
           {user?.fullName?.charAt(0).toUpperCase()}
         </div>
 
-        <div className="text-left hidden xl:block">
-          <p className="font-semibold text-white">{user?.fullName}</p>
-
+        <div className="hidden 2xl:block text-left">
+          <p className="font-semibold text-white text-sm">{user?.fullName}</p>
           <p className="text-xs text-slate-400">{user?.email}</p>
         </div>
 
-        <ChevronDown size={18} />
+        <ChevronDown size={16} />
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-3 w-64 bg-[#171b22] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50">
-          {/*
-          <button className="w-full flex items-center gap-3 px-5 py-4 hover:bg-[#222831] transition">
-            <User size={18} />
-            My Profile
-          </button>
-
-          <button className="w-full flex items-center gap-3 px-5 py-4 hover:bg-[#222831] transition">
-            <LayoutDashboard size={18} />
-            Dashboard
-          </button>
-
-          <button className="w-full flex items-center gap-3 px-5 py-4 hover:bg-[#222831] transition">
-            <Settings size={18} />
-            Settings
-          </button>
-          */}
-
-          <hr className="border-slate-700" />
-
+        <div className="absolute right-0 mt-3 w-48 bg-[#171b22] border border-slate-700 rounded-xl shadow-2xl overflow-hidden z-50">
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-5 py-4 text-red-400 hover:bg-red-500 hover:text-white transition"
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500 hover:text-white transition"
           >
             <LogOut size={18} />
             Logout

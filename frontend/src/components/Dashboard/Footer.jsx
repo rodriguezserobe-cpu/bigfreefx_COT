@@ -1,23 +1,34 @@
 const Footer = () => {
   return (
-    <footer className="mt-12 border-t bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl py-6 text-center">
-      <p className="text-blue-400 font-semibold tracking-widest">
-        BIGFREE FX TRADING
-      </p>
+    <footer className="mt-12 bg-[#0d1117]/90 backdrop-blur-xl border-t border-sky-500/20 shadow-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-6 sm:py-8">
+        <div className="flex flex-col items-center text-center gap-2">
+          <h2 className="text-sky-400 text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold tracking-[3px]">
+            BIGFREE FX TRADING
+          </h2>
 
-      <p className="text-gray-500 text-sm mt-1">
-        COMMITMENT OF TRADERS ANALYSIS
-      </p>
+          <p className="text-gray-400 text-xs sm:text-sm lg:text-base uppercase tracking-[3px]">
+            Commitment of Traders Analysis
+          </p>
 
-      <p className="text-gray-500 text-sm mt-2">
-        Email: rodriguezserobe@mail.com
-      </p>
+          <div className="mt-4 space-y-2">
+            <p className="text-gray-400 text-sm sm:text-base">
+              📧 rodriguezserobe@mail.com
+            </p>
 
-      <p className="text-gray-500 text-sm">Contact: 071 138 5640</p>
+            <p className="text-gray-400 text-sm sm:text-base">
+              📞 +27 71 138 5640
+            </p>
+          </div>
 
-      <p className="text-gray-600 text-xs mt-3">
-        © {new Date().getFullYear()} BIGFREE FX TRADING. All Rights Reserved.
-      </p>
+          <div className="w-full h-px bg-sky-500/20 my-5"></div>
+
+          <p className="text-gray-500 text-xs sm:text-sm">
+            © {new Date().getFullYear()} BIGFREE FX TRADING. All Rights
+            Reserved.
+          </p>
+        </div>
+      </div>
     </footer>
   );
 };

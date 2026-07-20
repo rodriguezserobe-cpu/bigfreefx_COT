@@ -7,7 +7,7 @@ import analysis2 from "../../assets/preview/analysis/analysis2.png";
 import analysis3 from "../../assets/preview/analysis/analysis3.png";
 
 import dashboard1 from "../../assets/preview/dashboard/dashboard1.jpg";
-import dashboard2 from "../../assets/preview/dashboard/dashboard2.png";
+import dashboard2 from "../../assets/preview/dashboard/dashboard2.jpg";
 import dashboard3 from "../../assets/preview/dashboard/dashboard3.png";
 
 import ImageSlider from "./ImageSlider";

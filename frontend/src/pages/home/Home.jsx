@@ -22,7 +22,6 @@ export default function Home() {
     <div ref={topRef} className="min-h-screen bg-[#111111] text-white">
       <Navbar
         topRef={topRef}
-        heroRef={heroRef}
         previewRef={previewRef}
         howRef={howRef}
         contactRef={contactRef}
@@ -32,7 +31,7 @@ export default function Home() {
       />
 
       <div ref={heroRef}>
-        <Hero authMode={authMode} setAuthMode={setAuthMode} />
+        <Hero authMode={authMode} setAuthMode={setAuthMode} formRef={formRef} />
       </div>
 
       <FloatingCards />

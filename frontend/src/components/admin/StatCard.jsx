@@ -38,8 +38,8 @@ export default function StatCard({
       onClick={onClick}
       className={`
         w-full
-        rounded-2xl
-        p-6
+        rounded-xl lg:rounded-2xl
+        p-4 sm:p-5 lg:p-6 2xl:p-8
         border
         text-left
         transition-all
@@ -51,17 +51,22 @@ export default function StatCard({
       `}
     >
       <p
-        className={`text-sm uppercase tracking-wider ${
-          active ? "text-white/80" : "text-slate-400"
-        }`}
+        className={`
+          uppercase tracking-wider
+          text-xs sm:text-sm lg:text-sm 2xl:text-base
+          ${active ? "text-white/80" : "text-slate-400"}
+        `}
       >
         {title}
       </p>
 
       <h2
-        className={`text-4xl font-bold mt-4 ${
-          active ? "text-white" : style.text
-        }`}
+        className={`
+          mt-3 lg:mt-4
+          font-bold
+          text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl
+          ${active ? "text-white" : style.text}
+        `}
       >
         {value}
       </h2>

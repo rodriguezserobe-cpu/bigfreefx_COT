@@ -1,7 +1,19 @@
+import { useEffect } from "react";
 import heroImage from "../../assets/image1.jpg";
 import AuthPanel from "./auth/AuthPanel";
 
 export default function Hero({ authMode, setAuthMode, formRef }) {
+  useEffect(() => {
+    if (authMode && formRef?.current) {
+      setTimeout(() => {
+        formRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 100);
+    }
+  }, [authMode, formRef]);
+
   return (
     <section id="hero" className="relative min-h-screen overflow-hidden">
       {/* Background */}
@@ -15,7 +27,6 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
       <div className="absolute inset-0 bg-gradient-to-r from-[#090b10]/95 via-[#090b10]/80 to-[#090b10]/55" />
 
       {/* Content */}
-
       <div className="relative z-10 max-w-7xl 2xl:max-w-[1700px] mx-auto min-h-screen flex flex-col lg:flex-row items-center px-6 md:px-8 lg:px-8 pt-28 lg:pt-0">
         {/* LEFT SIDE */}
         <div className="w-full lg:w-[58%] text-center lg:text-left">
@@ -25,7 +36,6 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl font-black leading-tight text-white mb-8">
             <span className="block">BIGFREE FX</span>
-
             <span className="block text-sky-400">TRADING</span>
           </h1>
 
@@ -38,7 +48,7 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
 
           <button
             onClick={() => setAuthMode("register")}
-            className="w-full sm:w-auto bg-sky-500 hover:bg-sky-600 transition-all duration-300 px-10 py-4 rounded-xl text-lg font-semibold shadow-lg shadow-sky-500/30"
+            className="w-full sm:w-auto bg-sky-500 hover:bg-sky-600 transition-all duration-300 px-8 py-3 rounded-xl text-base font-semibold shadow-lg shadow-sky-500/30"
           >
             Become a Member
           </button>

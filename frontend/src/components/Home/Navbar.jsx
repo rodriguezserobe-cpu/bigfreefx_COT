@@ -4,7 +4,6 @@ import logo from "../../assets/logo.png";
 
 export default function Navbar({
   topRef,
-  heroRef,
   previewRef,
   howRef,
   contactRef,
@@ -86,8 +85,11 @@ export default function Navbar({
         <div className="hidden lg:flex items-center gap-4">
           <button
             onClick={() => {
-              scrollTo(heroRef);
               openLogin();
+
+              setTimeout(() => {
+                scrollTo(formRef);
+              }, 100);
             }}
             className="px-6 py-3 rounded-xl border border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white transition-all duration-300"
           >
@@ -96,7 +98,7 @@ export default function Navbar({
 
           <button
             onClick={() => {
-              openLogin();
+              openRegister();
 
               setTimeout(() => {
                 scrollTo(formRef);
@@ -163,8 +165,12 @@ export default function Navbar({
           <div className="pt-4 border-t border-slate-700 space-y-3">
             <button
               onClick={() => {
-                scrollTo(heroRef);
                 openLogin();
+
+                setTimeout(() => {
+                  scrollTo(formRef);
+                }, 100);
+
                 closeMenu();
               }}
               className="w-full py-3 rounded-xl border border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white transition"
@@ -174,8 +180,12 @@ export default function Navbar({
 
             <button
               onClick={() => {
-                scrollTo(heroRef);
                 openRegister();
+
+                setTimeout(() => {
+                  scrollTo(formRef);
+                }, 100);
+
                 closeMenu();
               }}
               className="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white transition"

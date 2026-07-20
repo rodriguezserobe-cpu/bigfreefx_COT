@@ -51,6 +51,7 @@ export default function Dashboard() {
   const [cotData, setCotData] = useState({});
   const [allMarkets, setAllMarkets] = useState({});
   const [loading, setLoading] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -114,6 +115,8 @@ export default function Dashboard() {
         setMarket={setMarket}
         user={user}
         latestDate={latest?.reportDate}
+        mobileOpen={mobileOpen}
+        toggleSidebar={() => setMobileOpen(!mobileOpen)}
       />
 
       <Sidebar
@@ -123,9 +126,10 @@ export default function Dashboard() {
         setMarket={setMarket}
         group={group}
         setGroup={setGroup}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
       />
-
-      <div className="ml-52 flex-1 overflow-y-auto px-8 pt-32 pb-8">
+      <div className="flex-1 overflow-y-auto lg:ml-52 2xl:ml-72 px-4 sm:px-6 md:px-8 lg:px-8 2xl:px-12 pt-24 md:pt-28 lg:pt-32 pb-8">
         {loading ? (
           <div className="flex items-center justify-center h-[60vh]">
             <div className="text-center">
