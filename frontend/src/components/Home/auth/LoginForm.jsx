@@ -86,7 +86,11 @@ export default function LoginForm({ setAuthMode }) {
       <div className="text-right mt-3">
         <button
           type="button"
-          className="text-slate-400 text-sm hover:text-sky-300"
+          onClick={() => {
+            setAuthMode(null);
+            navigate("/forgot-password");
+          }}
+          className="text-slate-400 text-sm hover:text-sky-300 transition"
         >
           Forgot Password?
         </button>

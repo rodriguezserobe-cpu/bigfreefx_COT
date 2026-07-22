@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
 import connectDB from "./config/db.js";
 
@@ -9,8 +11,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 import cotRoutes from "./routes/cotRoutes.js";
 
 import { saveLatestReportsToDB } from "./services/cftcService.js";
-
-dotenv.config();
 
 const app = express();
 
