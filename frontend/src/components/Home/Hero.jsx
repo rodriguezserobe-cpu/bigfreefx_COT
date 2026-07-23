@@ -6,9 +6,14 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
   useEffect(() => {
     if (authMode && formRef?.current) {
       setTimeout(() => {
-        formRef.current.scrollIntoView({
+        const y =
+          formRef.current.getBoundingClientRect().top +
+          window.pageYOffset -
+          140; // Adjust this value if needed
+
+        window.scrollTo({
+          top: y,
           behavior: "smooth",
-          block: "center",
         });
       }, 100);
     }
@@ -60,7 +65,11 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
             ref={formRef}
             className="w-full lg:w-[560px] mt-10 lg:mt-0 lg:absolute lg:right-8 lg:top-1/2 lg:-translate-y-1/2"
           >
-            <AuthPanel authMode={authMode} setAuthMode={setAuthMode} />
+            <AuthPanel
+              key={authMode}
+              authMode={authMode}
+              setAuthMode={setAuthMode}
+            />
           </div>
         )}
       </div>

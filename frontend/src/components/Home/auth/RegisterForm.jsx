@@ -23,33 +23,6 @@ export default function RegisterForm({ setAuthMode }) {
     });
   };
 
-  const getStrength = () => {
-    if (form.password.length < 8)
-      return {
-        text: "Weak",
-        color: "text-red-400",
-      };
-
-    if (
-      /[A-Z]/.test(form.password) &&
-      /[a-z]/.test(form.password) &&
-      /\d/.test(form.password) &&
-      /[!@#$%^&*]/.test(form.password)
-    ) {
-      return {
-        text: "Strong",
-        color: "text-green-400",
-      };
-    }
-
-    return {
-      text: "Medium",
-      color: "text-yellow-400",
-    };
-  };
-
-  const strength = getStrength();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -140,12 +113,6 @@ export default function RegisterForm({ setAuthMode }) {
             type="password"
             placeholder="Password"
           />
-
-          {form.password && (
-            <p className={`mt-2 text-sm ${strength.color}`}>
-              Password Strength: {strength.text}
-            </p>
-          )}
         </div>
 
         <div className="sm:col-span-2">
@@ -157,19 +124,6 @@ export default function RegisterForm({ setAuthMode }) {
             type="password"
             placeholder="Confirm Password"
           />
-          {form.confirmPassword && (
-            <p
-              className={`mt-2 text-sm ${
-                form.password === form.confirmPassword
-                  ? "text-green-400"
-                  : "text-red-400"
-              }`}
-            >
-              {form.password === form.confirmPassword
-                ? "✓ Passwords match"
-                : "✗ Passwords do not match"}
-            </p>
-          )}
         </div>
       </div>
 
