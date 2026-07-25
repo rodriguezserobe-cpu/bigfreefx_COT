@@ -74,7 +74,7 @@ export default function Dashboard() {
     setCotData({});
 
     fetch(
-      `http://localhost:5000/api/cot/live?marketType=${marketType}&asset=${market}&group=${group}`,
+      `${import.meta.env.VITE_API_URL}/cot/live?marketType=${marketType}&asset=${market}&group=${group}`,
     )
       .then((res) => res.json())
       .then((response) => {
@@ -88,7 +88,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetch(
-      `http://localhost:5000/api/cot/live?marketType=${marketType}&group=${group}`,
+      `${import.meta.env.VITE_API_URL}/cot/live?marketType=${marketType}&group=${group}`,
     )
       .then((res) => res.json())
       .then((response) => {
