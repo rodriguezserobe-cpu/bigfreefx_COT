@@ -583,15 +583,19 @@ export const saveLatestReportsToDB = async () => {
     if (["BITCOIN", "MICRO BITCOIN"].includes(report.contract_market_name))
       category = "CRYPTO";
 
+    // Normalize report date to midnight UTC
+    const reportDate = new Date(report.report_date_as_yyyy_mm_dd);
+    reportDate.setUTCHours(0, 0, 0, 0);
+
     await COTReport.updateOne(
       {
         market: report.contract_market_name,
-        reportDate: new Date(report.report_date_as_yyyy_mm_dd),
+        reportDate,
       },
       {
         market: report.contract_market_name,
         category,
-        reportDate: new Date(report.report_date_as_yyyy_mm_dd),
+        reportDate,
         openInterest,
 
         commercials: buildGroup(
@@ -617,6 +621,19 @@ export const saveLatestReportsToDB = async () => {
       },
       { upsert: true },
     );
+
+    // Keep only the latest 20 reports for this market
+    const oldReports = await COTReport.find({
+      market: report.contract_market_name,
+    })
+      .sort({ reportDate: -1 })
+      .skip(20);
+
+    if (oldReports.length > 0) {
+      await COTReport.deleteMany({
+        _id: { $in: oldReports.map((r) => r._id) },
+      });
+    }
   }
 
   console.log(`Saved ${filteredReports.length} reports to MongoDB.`);
