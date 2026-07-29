@@ -12,6 +12,9 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, html) => {
+  await transporter.verify();
+  console.log("✅ SMTP verified");
+
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to,
