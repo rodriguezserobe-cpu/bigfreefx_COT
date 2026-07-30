@@ -1,25 +1,22 @@
 import "../config/env.js";
-import nodemailer from "nodemailer";
+import Brevo from "@getbrevo/brevo";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const apiInstance = new Brevo.TransactionalEmailsApi();
+
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY,
+);
 
 const sendEmail = async (to, subject, html) => {
-  await transporter.verify();
-  console.log("✅ SMTP verified");
-
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to,
+  await apiInstance.sendTransacEmail({
+    sender: {
+      name: "BigFree FX",
+      email: process.env.EMAIL_USER,
+    },
+    to: [{ email: to }],
     subject,
-    html,
+    htmlContent: html,
   });
 };
 
