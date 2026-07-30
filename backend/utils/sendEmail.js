@@ -1,5 +1,5 @@
 import "../config/env.js";
-import Brevo from "@getbrevo/brevo";
+import * as Brevo from "@getbrevo/brevo";
 
 const apiInstance = new Brevo.TransactionalEmailsApi();
 
