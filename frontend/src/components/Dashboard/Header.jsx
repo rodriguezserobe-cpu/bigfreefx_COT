@@ -25,16 +25,16 @@ const Header = ({
 
           <img
             src={logo}
-            alt="Logo"
-            className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 2xl:w-24 2xl:h-24 object-contain"
+            alt="BigFree FX"
+            className="w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain"
           />
 
-          <div className="leading-tight">
-            <h1 className="font-bold text-white text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-2xl">
+          <div className="translate-y-1 md:translate-y-3">
+            <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-white tracking-wide">
               BIGFREE FX
             </h1>
 
-            <p className="uppercase tracking-[2px] md:tracking-[4px] lg:tracking-[5px] text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] 2xl:text-xs text-sky-400">
+            <p className="text-[10px] md:text-sm text-sky-400 uppercase tracking-[2px] md:tracking-[4px]">
               Commitment of Traders
             </p>
           </div>
