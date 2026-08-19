@@ -1,5 +1,8 @@
 import { X } from "lucide-react";
 
+import { Link, useLocation } from "react-router-dom";
+import { FaChartLine, FaBookOpen } from "react-icons/fa";
+
 import MarketSelector from "./MarketSelector";
 import AssetSelector from "./AssetSelector";
 import GroupSelector from "./GroupSelector";
@@ -14,6 +17,7 @@ const Sidebar = ({
   mobileOpen,
   setMobileOpen,
 }) => {
+  const location = useLocation();
   return (
     <>
       {/* Overlay */}
@@ -74,7 +78,6 @@ const Sidebar = ({
         <h2 className="hidden lg:block text-xl 2xl:text-2xl font-bold mb-6 text-sky-400">
           MARKET
         </h2>
-
         <div className="space-y-6 2xl:space-y-8">
           <MarketSelector
             marketType={marketType}
@@ -88,6 +91,35 @@ const Sidebar = ({
           />
 
           <GroupSelector group={group} setGroup={setGroup} />
+        </div>
+
+        {/* Main Navigation */}
+        <div className="mb-6 2xl:mb-8 space-y-2 2xl:space-y-3">
+          <Link
+            to="/bigfreefxhub"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 rounded-xl px-3 py-3 2xl:px-4 2xl:py-4 transition text-sm 2xl:text-base ${
+              location.pathname === "/bigfreefxhub"
+                ? "bg-sky-500 text-white"
+                : "text-slate-400 hover:bg-slate-800 hover:text-white"
+            }`}
+          >
+            <FaChartLine className="shrink-0" />
+            <span>BigFreeFx Hub</span>
+          </Link>
+
+          <Link
+            to="/journal"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 rounded-xl px-3 py-3 2xl:px-4 2xl:py-4 transition text-sm 2xl:text-base ${
+              location.pathname.startsWith("/journal")
+                ? "bg-sky-500 text-white"
+                : "text-slate-400 hover:bg-slate-800 hover:text-white"
+            }`}
+          >
+            <FaBookOpen className="shrink-0" />
+            <span>Trading Journal</span>
+          </Link>
         </div>
       </aside>
     </>

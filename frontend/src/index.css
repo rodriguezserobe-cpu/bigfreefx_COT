@@ -66,3 +66,16 @@ body {
       0 0 45px rgba(14, 165, 233, 0.5);
   }
 }
+@keyframes marquee {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 12s linear infinite;
+}

@@ -45,7 +45,7 @@ export default function Navbar({
             </h1>
 
             <p className="text-[10px] md:text-sm text-sky-400 uppercase tracking-[2px] md:tracking-[4px]">
-              Commitment of Traders
+              Trading
             </p>
           </div>
         </div>

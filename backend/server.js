@@ -9,6 +9,10 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cotRoutes from "./routes/cotRoutes.js";
+import tradeRoutes from "./routes/tradeRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import goalRoutes from "./routes/goalRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 import { saveLatestReportsToDB } from "./services/cftcService.js";
 
@@ -30,6 +34,20 @@ app.use("/api/admin", adminRoutes);
 
 // ================= COT =================
 app.use("/api/cot", cotRoutes);
+
+// ================= TRADES =================
+app.use("/api/trades", tradeRoutes);
+
+// ================= USERS =================
+app.use("/api/user", userRoutes);
+
+// ================= GOALS =================
+
+app.use("/api/goals", goalRoutes);
+
+// ================= UPLOAD =================
+
+app.use("/api/uploads", uploadRoutes);
 
 const PORT = process.env.PORT || 5000;
 

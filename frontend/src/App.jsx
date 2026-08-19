@@ -5,9 +5,12 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import BigFreeFxHub from "./pages/BigFreeFxHub/BigFreeFxHub";
+import TradingJournalDashboard from "./pages/TradingJournal/TradingJournalDashboard";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import TradingJournalLayout from "./pages/TradingJournal/TradingJournalLayout";
 
 function App() {
   return (
@@ -22,6 +25,16 @@ function App() {
         {/* Reset Password */}
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
+        {/* BigFreeFxHub */}
+        <Route
+          path="/bigfreefxhub"
+          element={
+            <ProtectedRoute>
+              <BigFreeFxHub />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Member Dashboard */}
         <Route
           path="/dashboard"
@@ -31,6 +44,18 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Trading Journal Dashboard */}
+        <Route element={<TradingJournalLayout />}>
+          <Route
+            path="/journal"
+            element={
+              <ProtectedRoute>
+                <TradingJournalDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
 
         {/* Admin Dashboard */}
         <Route

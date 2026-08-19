@@ -48,7 +48,7 @@ export default function LoginForm({ setAuthMode }) {
       if (res.data.user.role === "admin") {
         navigate("/admin");
       } else {
-        navigate("/dashboard");
+        navigate("/bigfreefxhub");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed.");

@@ -25,11 +25,27 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    currency: {
+      type: String,
+      enum: [
+        "ZAR",
+        "USD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "AUD",
+        "CAD",
+        "CHF",
+        "NZD",
+        "LSL",
+      ],
+      default: "ZAR",
+    },
+
     password: {
       type: String,
       required: true,
     },
-
     role: {
       type: String,
       enum: ["member", "admin"],

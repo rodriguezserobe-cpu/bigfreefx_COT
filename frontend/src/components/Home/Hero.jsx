@@ -1,24 +1,6 @@
-import { useEffect } from "react";
 import heroImage from "../../assets/image1.jpg";
-import AuthPanel from "./auth/AuthPanel";
 
-export default function Hero({ authMode, setAuthMode, formRef }) {
-  useEffect(() => {
-    if (authMode && formRef?.current) {
-      setTimeout(() => {
-        const y =
-          formRef.current.getBoundingClientRect().top +
-          window.pageYOffset -
-          140; // Adjust this value if needed
-
-        window.scrollTo({
-          top: y,
-          behavior: "smooth",
-        });
-      }, 100);
-    }
-  }, [authMode, formRef]);
-
+export default function Hero({ setAuthMode }) {
   return (
     <section id="hero" className="relative min-h-screen overflow-hidden">
       {/* Background */}
@@ -35,8 +17,8 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
       <div className="relative z-10 max-w-7xl 2xl:max-w-[1700px] mx-auto min-h-screen flex flex-col lg:flex-row items-center px-6 md:px-8 lg:px-8 pt-28 lg:pt-0">
         {/* LEFT SIDE */}
         <div className="w-full lg:w-[58%] text-center lg:text-left">
-          <p className="uppercase tracking-[3px] md:tracking-[6px] text-sky-400 font-semibold mb-5 animate-pulse text-sm md:text-base">
-            Commitment of Traders Analysis
+          <p className="uppercase tracking-[3px] md:tracking-[6px] text-sky-400 font-semibold mb-2 animate-pulse text-sm md:text-base">
+            Trade with purpose. Grow with every trade.
           </p>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl font-black leading-tight text-white mb-8">
@@ -45,10 +27,10 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
           </h1>
 
           <p className="max-w-full md:max-w-[620px] lg:max-w-[620px] mx-auto lg:mx-0 text-base md:text-lg leading-8 md:leading-9 text-gray-300 mb-10">
-            We transform complex Commitment of Traders (COT) reports into simple
-            institutional market analysis, helping traders understand where
-            Smart Money is positioned across Forex, Metals, Indices and
-            Cryptocurrency markets.
+            BigFree FX helps traders bring structure to their decisions, learn
+            from their performance, and build the discipline needed for
+            long-term growth. develop better habits, measure their progress, and
+            turn their trading journey into a path of continuous improvement.
           </p>
 
           <button
@@ -58,20 +40,6 @@ export default function Hero({ authMode, setAuthMode, formRef }) {
             Become a Member
           </button>
         </div>
-
-        {/* RIGHT PANEL */}
-        {authMode && (
-          <div
-            ref={formRef}
-            className="w-full lg:w-[560px] mt-10 lg:mt-0 lg:absolute lg:right-8 lg:top-1/2 lg:-translate-y-1/2"
-          >
-            <AuthPanel
-              key={authMode}
-              authMode={authMode}
-              setAuthMode={setAuthMode}
-            />
-          </div>
-        )}
       </div>
     </section>
   );

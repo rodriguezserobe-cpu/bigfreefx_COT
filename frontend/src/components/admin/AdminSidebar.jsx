@@ -1,4 +1,12 @@
-import { LayoutDashboard, BarChart3, Settings, LogOut, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  BarChart3,
+  BookOpen,
+  Globe,
+  Settings,
+  LogOut,
+  X,
+} from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 
@@ -16,6 +24,16 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }) {
       title: "Dashboard",
       icon: LayoutDashboard,
       path: "/admin",
+    },
+    {
+      title: "BigFreeFx Hub",
+      icon: Globe,
+      path: "/bigfreefxhub",
+    },
+    {
+      title: "Trading Journal",
+      icon: BookOpen,
+      path: "/journal",
     },
     {
       title: "Open COT Dashboard",
