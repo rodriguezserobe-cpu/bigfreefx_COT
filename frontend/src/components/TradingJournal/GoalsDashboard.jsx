@@ -3,13 +3,15 @@ import { FaBullseye, FaPlus, FaTrash } from "react-icons/fa";
 
 import AddGoalModal from "./AddGoalModal";
 import API from "../../api/auth";
+import { useTradingJournal } from "../../context/TradingJournalContext";
 
 const GoalsDashboard = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openAddGoal, setOpenAddGoal] = useState(false);
-  const [currency, setCurrency] = useState("ZAR");
   const [trades, setTrades] = useState([]);
+
+  const { currency, convertCurrency, ratesLoading } = useTradingJournal();
 
   const currencySymbols = {
     ZAR: "R",
@@ -22,21 +24,6 @@ const GoalsDashboard = () => {
     CHF: "CHF ",
     NZD: "NZ$",
     LSL: "M",
-  };
-
-  // =========================
-  // FETCH CURRENCY
-  // =========================
-  const fetchCurrency = async () => {
-    try {
-      const { data } = await API.get("/user/profile");
-
-      if (data?.user?.currency) {
-        setCurrency(data.user.currency);
-      }
-    } catch (error) {
-      console.error("Failed to load currency:", error);
-    }
   };
 
   // =========================
@@ -67,11 +54,24 @@ const GoalsDashboard = () => {
     }
   };
 
+  // =========================
+  // INITIAL LOAD
+  // =========================
   useEffect(() => {
-    fetchCurrency();
     fetchGoals();
     fetchTrades();
   }, []);
+
+  // =========================
+  // CONVERT TRADE PROFIT
+  // =========================
+  const getConvertedProfit = (trade) => {
+    const originalCurrency = trade.currency || "ZAR";
+
+    return Number(
+      convertCurrency(trade.profit ?? 0, originalCurrency, currency) || 0,
+    );
+  };
 
   // =========================
   // GOAL PROGRESS
@@ -93,27 +93,36 @@ const GoalsDashboard = () => {
 
     let current = 0;
 
+    // =========================
     // PROFIT
+    // =========================
     if (goal.type === "PROFIT") {
-      current = goalTrades.reduce(
-        (sum, trade) => sum + Number(trade.profit || 0),
-        0,
-      );
+      current = goalTrades.reduce((sum, trade) => {
+        return sum + getConvertedProfit(trade);
+      }, 0);
     }
 
+    // =========================
     // MAXIMUM LOSS
+    // =========================
     if (goal.type === "MAX_LOSS") {
       current = goalTrades
         .filter((trade) => Number(trade.profit) < 0)
-        .reduce((sum, trade) => sum + Math.abs(Number(trade.profit)), 0);
+        .reduce((sum, trade) => {
+          return sum + Math.abs(getConvertedProfit(trade));
+        }, 0);
     }
 
+    // =========================
     // NUMBER OF TRADES
+    // =========================
     if (goal.type === "TRADES") {
       current = goalTrades.length;
     }
 
+    // =========================
     // WIN RATE
+    // =========================
     if (goal.type === "WIN_RATE") {
       const closedTrades = goalTrades.filter(
         (trade) => trade.result !== "OPEN",
@@ -127,14 +136,15 @@ const GoalsDashboard = () => {
         closedTrades.length > 0 ? (wins / closedTrades.length) * 100 : 0;
     }
 
+    // =========================
     // ACCOUNT GROWTH
+    // =========================
     if (goal.type === "GROWTH") {
       const startingEquity = Number(goal.startingEquity) || 0;
 
-      const netProfit = goalTrades.reduce(
-        (sum, trade) => sum + Number(trade.profit || 0),
-        0,
-      );
+      const netProfit = goalTrades.reduce((sum, trade) => {
+        return sum + getConvertedProfit(trade);
+      }, 0);
 
       current = startingEquity + netProfit;
     }
@@ -160,6 +170,8 @@ const GoalsDashboard = () => {
   // DELETE GOAL
   // =========================
   const deleteGoal = async (id) => {
+    if (!window.confirm("Delete this goal?")) return;
+
     try {
       await API.delete(`/goals/${id}`);
 
@@ -245,16 +257,18 @@ const GoalsDashboard = () => {
       {/* =========================
           LOADING
       ========================= */}
-      {loading && (
+      {(loading || ratesLoading) && (
         <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 text-center">
-          <p className="text-slate-400">Loading goals...</p>
+          <p className="text-slate-400">
+            {loading ? "Loading goals..." : "Converting currency..."}
+          </p>
         </div>
       )}
 
       {/* =========================
           EMPTY STATE
       ========================= */}
-      {!loading && goals.length === 0 && (
+      {!loading && !ratesLoading && goals.length === 0 && (
         <div className="border border-slate-800 bg-slate-900/60 rounded-2xl p-8 sm:p-12 text-center">
           <FaBullseye className="mx-auto text-4xl sm:text-5xl text-slate-600 mb-4" />
 
@@ -279,7 +293,7 @@ const GoalsDashboard = () => {
       {/* =========================
           GOALS
       ========================= */}
-      {!loading && goals.length > 0 && (
+      {!loading && !ratesLoading && goals.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {goals.map((goal) => {
             const progress = getGoalProgress(goal);

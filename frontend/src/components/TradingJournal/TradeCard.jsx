@@ -3,6 +3,7 @@ import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import API from "../../api/auth";
 import ViewTradeModal from "./ViewTradeModal";
 import AddTradeModal from "./AddTradeModal";
+import { useTradingJournal } from "../../context/TradingJournalContext";
 
 const currencySymbols = {
   ZAR: "R",
@@ -17,7 +18,9 @@ const currencySymbols = {
   LSL: "M",
 };
 
-const TradeCards = ({ trades, searchTerm, filter, onRefresh, currency }) => {
+const TradeCards = ({ trades, searchTerm, filter, onRefresh }) => {
+  const { currency, convertCurrency, ratesLoading } = useTradingJournal();
+
   const [selectedTrade, setSelectedTrade] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
 
@@ -32,6 +35,7 @@ const TradeCards = ({ trades, searchTerm, filter, onRefresh, currency }) => {
       onRefresh();
     } catch (error) {
       console.error(error);
+      alert("Failed to delete trade.");
     }
   };
 
@@ -55,121 +59,164 @@ const TradeCards = ({ trades, searchTerm, filter, onRefresh, currency }) => {
 
     return matchesSearch;
   });
+
   return (
     <>
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {filteredTrades.map((trade) => (
-          <div
-            key={trade._id}
-            className="rounded-2xl border border-slate-800 bg-slate-900 p-6 hover:border-sky-500 transition-all"
-          >
-            {/* Header */}
-            <div className="flex justify-between items-center mb-5">
-              <div>
-                <h3 className="text-2xl font-bold text-white">{trade.pair}</h3>
-                <p className="text-slate-400">{trade.strategy}</p>
-              </div>
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-2">
+        {filteredTrades.map((trade) => {
+          const originalCurrency = trade.currency || "ZAR";
 
-              <span
-                className={`px-4 py-1 rounded-full text-sm font-semibold ${
-                  trade.direction === "BUY"
-                    ? "bg-green-500/20 text-green-400"
-                    : "bg-red-500/20 text-red-400"
-                }`}
-              >
-                {trade.direction}
-              </span>
-            </div>
+          const convertedProfit = convertCurrency(
+            trade.profit ?? 0,
+            originalCurrency,
+            currency,
+          );
 
-            {/* Information */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-slate-400">Open Date</p>
-                <p className="text-white">
-                  {new Date(trade.openDate).toLocaleDateString()}
-                </p>
-              </div>
+          const symbol = currencySymbols[currency] || currency;
 
-              <div>
-                <p className="text-slate-400">Close Date</p>
-                <p className="text-white">
-                  {trade.closeDate
-                    ? new Date(trade.closeDate).toLocaleDateString()
-                    : "-"}
-                </p>
-              </div>
+          return (
+            <div
+              key={trade._id}
+              className="w-full min-w-0 rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-all hover:border-sky-500 sm:p-6"
+            >
+              {/* Header */}
+              <div className="mb-5 flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="truncate text-xl font-bold text-white sm:text-2xl">
+                    {trade.pair}
+                  </h3>
 
-              <div>
-                <p className="text-slate-400">LotSize</p>
-                <p className="text-white">{trade.lotSize}</p>
-              </div>
-
-              <div>
-                <p className="text-slate-400">Risk : Reward</p>
-                <p className="text-white">
-                  {trade.risk}:{trade.reward}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-slate-400">Result</p>
+                  <p className="mt-1 break-words text-sm text-slate-400">
+                    {trade.strategy}
+                  </p>
+                </div>
 
                 <span
-                  className={`inline-block mt-1 px-3 py-1 rounded-full text-sm ${
-                    trade.result === "WIN"
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold sm:px-4 sm:text-sm ${
+                    trade.direction === "BUY"
                       ? "bg-green-500/20 text-green-400"
                       : "bg-red-500/20 text-red-400"
                   }`}
                 >
-                  {trade.result}
+                  {trade.direction}
                 </span>
               </div>
 
-              <div>
-                <p className="text-slate-400">Profit</p>
+              {/* Information */}
+              <div className="grid grid-cols-1 gap-4 text-sm min-[400px]:grid-cols-2">
+                <div>
+                  <p className="text-slate-400">Open Date</p>
+                  <p className="mt-1 text-white">
+                    {new Date(trade.openDate).toLocaleDateString()}
+                  </p>
+                </div>
 
-                <p
-                  className={`font-bold ${
-                    trade.profit >= 0 ? "text-green-400" : "text-red-400"
-                  }`}
+                <div>
+                  <p className="text-slate-400">Close Date</p>
+                  <p className="mt-1 text-white">
+                    {trade.closeDate
+                      ? new Date(trade.closeDate).toLocaleDateString()
+                      : "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-400">Lot Size</p>
+                  <p className="mt-1 text-white">{trade.lotSize}</p>
+                </div>
+
+                <div>
+                  <p className="text-slate-400">Risk : Reward</p>
+                  <p className="mt-1 text-white">
+                    {trade.risk}:{trade.reward}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-400">Result</p>
+
+                  <span
+                    className={`mt-1 inline-block rounded-full px-3 py-1 text-sm ${
+                      trade.result === "WIN"
+                        ? "bg-green-500/20 text-green-400"
+                        : trade.result === "LOSS"
+                          ? "bg-red-500/20 text-red-400"
+                          : trade.result === "BE"
+                            ? "bg-blue-500/20 text-blue-400"
+                            : "bg-yellow-500/20 text-yellow-400"
+                    }`}
+                  >
+                    {trade.result}
+                  </span>
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-slate-400">Profit</p>
+
+                  <p
+                    className={`mt-1 break-words font-bold ${
+                      convertedProfit >= 0 ? "text-green-400" : "text-red-400"
+                    }`}
+                  >
+                    {ratesLoading ? (
+                      <span className="text-slate-500">Loading...</span>
+                    ) : (
+                      <>
+                        {symbol}
+                        {Number(convertedProfit).toFixed(2)}
+                      </>
+                    )}
+                  </p>
+
+                  {/* Show original amount */}
+                  {originalCurrency !== currency && (
+                    <p className="mt-1 text-xs text-slate-500">
+                      Original:{" "}
+                      {currencySymbols[originalCurrency] || originalCurrency}
+                      {Number(trade.profit ?? 0).toFixed(2)} {originalCurrency}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-6 flex justify-end gap-5 border-t border-slate-800 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedTrade(trade);
+                    setViewOpen(true);
+                  }}
+                  className="text-sky-400 transition hover:text-sky-300"
+                  title="View trade"
                 >
-                  {currencySymbols[currency] || currency}
-                  {Number(trade.profit ?? 0).toFixed(2)}
-                </p>
+                  <FaEye size={18} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingTrade(trade);
+                    setEditOpen(true);
+                  }}
+                  className="text-yellow-400 transition hover:text-yellow-300"
+                  title="Edit trade"
+                >
+                  <FaEdit size={18} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDelete(trade._id)}
+                  className="text-red-400 transition hover:text-red-300"
+                  title="Delete trade"
+                >
+                  <FaTrash size={18} />
+                </button>
               </div>
             </div>
-
-            {/* Footer */}
-            <div className="flex justify-end gap-4 mt-6 pt-4 border-t border-slate-800">
-              <button
-                onClick={() => {
-                  setSelectedTrade(trade);
-                  setViewOpen(true);
-                }}
-                className="text-sky-400 hover:text-sky-300"
-              >
-                <FaEye size={18} />
-              </button>
-
-              <button
-                onClick={() => {
-                  setEditingTrade(trade);
-                  setEditOpen(true);
-                }}
-                className="text-yellow-400 hover:text-yellow-300"
-              >
-                <FaEdit size={18} />
-              </button>
-
-              <button
-                onClick={() => handleDelete(trade._id)}
-                className="text-red-400 hover:text-red-300"
-              >
-                <FaTrash size={18} />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <ViewTradeModal

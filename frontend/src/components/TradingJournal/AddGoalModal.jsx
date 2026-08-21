@@ -1,8 +1,24 @@
 import { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import API from "../../api/auth";
+import { useTradingJournal } from "../../context/TradingJournalContext";
+
+const currencySymbols = {
+  ZAR: "R",
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+  AUD: "A$",
+  CAD: "C$",
+  CHF: "CHF ",
+  NZD: "NZ$",
+  LSL: "M",
+};
 
 const AddGoalModal = ({ open, onClose, onSaved }) => {
+  const { currency } = useTradingJournal();
+
   const [type, setType] = useState("PROFIT");
   const [title, setTitle] = useState("");
   const [target, setTarget] = useState("");
@@ -10,6 +26,8 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
   const [endDate, setEndDate] = useState("");
   const [saving, setSaving] = useState(false);
   const [startingEquity, setStartingEquity] = useState("");
+
+  const symbol = currencySymbols[currency] || currency;
 
   // Prevent the page behind the modal from scrolling
   useEffect(() => {
@@ -23,6 +41,18 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
     };
   }, [open]);
 
+  // Reset form when modal opens
+  useEffect(() => {
+    if (!open) return;
+
+    setType("PROFIT");
+    setTitle("");
+    setTarget("");
+    setStartDate("");
+    setEndDate("");
+    setStartingEquity("");
+  }, [open]);
+
   if (!open) return null;
 
   const handleSave = async (e) => {
@@ -33,8 +63,18 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
       return;
     }
 
+    if (Number(target) <= 0) {
+      alert("Target must be greater than 0.");
+      return;
+    }
+
     if (type === "GROWTH" && !startingEquity) {
       alert("Please enter your starting equity.");
+      return;
+    }
+
+    if (type === "GROWTH" && Number(startingEquity) < 0) {
+      alert("Starting equity cannot be negative.");
       return;
     }
 
@@ -50,9 +90,12 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
         type,
         title,
         target: Number(target),
-        startingEquity: Number(startingEquity),
+        startingEquity: type === "GROWTH" ? Number(startingEquity) : 0,
         startDate,
         endDate,
+
+        // Save the currency used when the goal was created
+        currency,
       });
 
       setTitle("");
@@ -62,7 +105,7 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
       setType("PROFIT");
       setStartingEquity("");
 
-      onSaved();
+      await onSaved?.();
       onClose();
     } catch (error) {
       console.error("Failed to create goal:", error);
@@ -72,6 +115,9 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
       setSaving(false);
     }
   };
+
+  const isMoneyGoal =
+    type === "PROFIT" || type === "MAX_LOSS" || type === "GROWTH";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-3 sm:p-4">
@@ -85,14 +131,15 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
             </h2>
 
             <p className="mt-1 text-xs sm:text-sm text-slate-400">
-              Set a target for your trading.
+              Set a target for your trading in {currency}.
             </p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            disabled={saving}
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Close"
           >
             <FaTimes size={18} />
@@ -114,7 +161,8 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                disabled={saving}
+                className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <option value="PROFIT">Profit Target</option>
                 <option value="TRADES">Number of Trades</option>
@@ -135,7 +183,8 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. August Profit Target"
-                className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white placeholder:text-slate-500 outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                disabled={saving}
+                className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white placeholder:text-slate-500 outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
               />
             </div>
 
@@ -145,15 +194,40 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
                 Target
               </label>
 
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={target}
-                onChange={(e) => setTarget(e.target.value)}
-                placeholder="5000"
-                className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white placeholder:text-slate-500 outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
-              />
+              <div className="relative">
+                {isMoneyGoal && (
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    {symbol}
+                  </span>
+                )}
+
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value)}
+                  placeholder={
+                    type === "WIN_RATE"
+                      ? "70"
+                      : type === "TRADES"
+                        ? "20"
+                        : "5000"
+                  }
+                  disabled={saving}
+                  className={`h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white placeholder:text-slate-500 outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-60 ${
+                    isMoneyGoal ? "pl-10" : ""
+                  }`}
+                />
+              </div>
+
+              <p className="mt-1 text-xs text-slate-500">
+                {type === "WIN_RATE"
+                  ? "Enter your target percentage."
+                  : type === "TRADES"
+                    ? "Enter the number of trades you want to complete."
+                    : `Target amount is saved in ${currency}.`}
+              </p>
             </div>
 
             {/* Starting Equity */}
@@ -163,15 +237,26 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
                   Starting Equity
                 </label>
 
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={startingEquity}
-                  onChange={(e) => setStartingEquity(e.target.value)}
-                  placeholder="10000"
-                  className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white placeholder:text-slate-500 outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
-                />
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    {symbol}
+                  </span>
+
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={startingEquity}
+                    onChange={(e) => setStartingEquity(e.target.value)}
+                    placeholder="10000"
+                    disabled={saving}
+                    className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 pl-10 pr-4 text-white placeholder:text-slate-500 outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                </div>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Starting account equity in {currency}.
+                </p>
               </div>
             )}
 
@@ -186,7 +271,8 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="h-12 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-900 px-3 sm:px-4 text-white outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                  disabled={saving}
+                  className="h-12 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-900 px-3 sm:px-4 text-white outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
                 />
               </div>
 
@@ -199,10 +285,27 @@ const AddGoalModal = ({ open, onClose, onSaved }) => {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="h-12 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-900 px-3 sm:px-4 text-white outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                  disabled={saving}
+                  className="h-12 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-900 px-3 sm:px-4 text-white outline-none transition focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
                 />
               </div>
             </div>
+
+            {/* Currency Information */}
+            {isMoneyGoal && (
+              <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+                <p className="text-xs text-slate-500">Goal currency</p>
+
+                <p className="mt-1 font-semibold text-sky-400">
+                  {currency} ({symbol})
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Trade profits will be converted to this currency when
+                  calculating your goal progress.
+                </p>
+              </div>
+            )}
 
             {/* Buttons */}
             <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-5 sm:flex-row sm:justify-end">

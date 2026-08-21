@@ -22,7 +22,8 @@ const currencySymbols = {
 const AnalyticsDashboard = () => {
   const [trades, setTrades] = useState([]);
 
-  const { selectedPeriod, currency } = useTradingJournal();
+  const { selectedPeriod, currency, convertCurrency, ratesLoading } =
+    useTradingJournal();
 
   useEffect(() => {
     fetchTrades();
@@ -37,10 +38,33 @@ const AnalyticsDashboard = () => {
     }
   };
 
+  // =========================================================
+  // CONVERT TRADE PROFITS
+  // =========================================================
+
+  const convertedTrades = trades.map((trade) => {
+    const originalCurrency = trade.currency || "ZAR";
+
+    const convertedProfit = convertCurrency(
+      trade.profit ?? 0,
+      originalCurrency,
+      currency,
+    );
+
+    return {
+      ...trade,
+      profit: Number(convertedProfit || 0),
+    };
+  });
+
+  // =========================================================
+  // PERIOD TRADES
+  // =========================================================
+
   const periodTrades =
     selectedPeriod === "ALL"
-      ? trades
-      : trades.filter((trade) => {
+      ? convertedTrades
+      : convertedTrades.filter((trade) => {
           if (!trade.openDate) return false;
 
           const date = new Date(trade.openDate);
@@ -52,17 +76,33 @@ const AnalyticsDashboard = () => {
           return tradePeriod === selectedPeriod;
         });
 
+  // =========================================================
+  // CLOSED TRADES
+  // =========================================================
+
   const closedTrades = periodTrades.filter((t) => t.result !== "OPEN");
+
+  // =========================================================
+  // TOTAL PROFIT
+  // =========================================================
 
   const totalProfit = closedTrades
     .filter((t) => Number(t.profit) > 0)
     .reduce((sum, t) => sum + Number(t.profit), 0);
+
+  // =========================================================
+  // TOTAL LOSS
+  // =========================================================
 
   const totalLoss = Math.abs(
     closedTrades
       .filter((t) => Number(t.profit) < 0)
       .reduce((sum, t) => sum + Number(t.profit), 0),
   );
+
+  // =========================================================
+  // CURRENT STREAK
+  // =========================================================
 
   const getCurrentStreak = () => {
     if (closedTrades.length === 0) {
@@ -90,6 +130,10 @@ const AnalyticsDashboard = () => {
 
   const currentStreak = getCurrentStreak();
 
+  // =========================================================
+  // WIN RATE
+  // =========================================================
+
   const winningTrades = closedTrades.filter((t) => t.result === "WIN");
 
   const winRate =
@@ -97,12 +141,20 @@ const AnalyticsDashboard = () => {
       ? ((winningTrades.length / closedTrades.length) * 100).toFixed(1)
       : "0.0";
 
+  // =========================================================
+  // PROFIT FACTOR
+  // =========================================================
+
   const profitFactor =
     totalLoss > 0
       ? (totalProfit / totalLoss).toFixed(2)
       : totalProfit > 0
         ? "∞"
         : "0.00";
+
+  // =========================================================
+  // BIGGEST WIN
+  // =========================================================
 
   const biggestWin =
     closedTrades.filter((t) => Number(t.profit) > 0).length > 0
@@ -113,6 +165,10 @@ const AnalyticsDashboard = () => {
         )
       : 0;
 
+  // =========================================================
+  // BIGGEST LOSS
+  // =========================================================
+
   const biggestLoss =
     closedTrades.filter((t) => Number(t.profit) < 0).length > 0
       ? Math.min(
@@ -121,6 +177,10 @@ const AnalyticsDashboard = () => {
             .map((t) => Number(t.profit)),
         )
       : 0;
+
+  // =========================================================
+  // PERFORMANCE CALCULATION
+  // =========================================================
 
   const calculatePerformance = (items) => {
     const wins = items.filter((t) => t.result === "WIN");
@@ -151,6 +211,10 @@ const AnalyticsDashboard = () => {
     };
   };
 
+  // =========================================================
+  // PAIR PERFORMANCE
+  // =========================================================
+
   const getPairPerformance = () => {
     const pairs = {};
 
@@ -171,6 +235,10 @@ const AnalyticsDashboard = () => {
   };
 
   const pairPerformance = getPairPerformance();
+
+  // =========================================================
+  // BEST PAIR
+  // =========================================================
 
   const getBestPair = () => {
     const profitablePairs = pairPerformance.filter(
@@ -198,6 +266,10 @@ const AnalyticsDashboard = () => {
   };
 
   const bestPair = getBestPair();
+
+  // =========================================================
+  // WORST PAIR
+  // =========================================================
 
   const getWorstPair = () => {
     const losingPairs = pairPerformance.filter((pair) => pair.netProfit < 0);
@@ -228,6 +300,10 @@ const AnalyticsDashboard = () => {
 
   const worstPair = getWorstPair();
 
+  // =========================================================
+  // STRATEGY PERFORMANCE
+  // =========================================================
+
   const getStrategyPerformance = () => {
     const strategies = {};
 
@@ -248,6 +324,10 @@ const AnalyticsDashboard = () => {
   };
 
   const strategyPerformance = getStrategyPerformance();
+
+  // =========================================================
+  // BEST STRATEGY
+  // =========================================================
 
   const getBestStrategy = () => {
     const profitableStrategies = strategyPerformance.filter(
@@ -277,6 +357,10 @@ const AnalyticsDashboard = () => {
   const bestStrategy = getBestStrategy();
 
   const symbol = currencySymbols[currency] || currency;
+
+  // =========================================================
+  // PERIOD LABEL
+  // =========================================================
 
   const periodLabel =
     selectedPeriod === "ALL"
@@ -334,8 +418,9 @@ const AnalyticsDashboard = () => {
               <p className="text-sm text-slate-400">Total Profit</p>
 
               <h2 className="mt-3 text-2xl font-bold text-green-400 sm:text-3xl break-words">
-                {symbol}
-                {totalProfit.toFixed(2)}
+                {ratesLoading
+                  ? "Loading..."
+                  : `${symbol}${totalProfit.toFixed(2)}`}
               </h2>
             </div>
 
@@ -343,8 +428,9 @@ const AnalyticsDashboard = () => {
               <p className="text-sm text-slate-400">Total Loss</p>
 
               <h2 className="mt-3 text-2xl font-bold text-red-400 sm:text-3xl break-words">
-                {symbol}
-                {totalLoss.toFixed(2)}
+                {ratesLoading
+                  ? "Loading..."
+                  : `${symbol}${totalLoss.toFixed(2)}`}
               </h2>
             </div>
 

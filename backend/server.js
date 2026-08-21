@@ -13,6 +13,7 @@ import tradeRoutes from "./routes/tradeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import exchangeRateRoutes from "./routes/exchangeRateRoutes.js";
 
 import { saveLatestReportsToDB } from "./services/cftcService.js";
 
@@ -40,6 +41,9 @@ app.use("/api/trades", tradeRoutes);
 
 // ================= USERS =================
 app.use("/api/user", userRoutes);
+
+// ================= EXCHANGE RATES =================
+app.use("/api/exchange-rates", exchangeRateRoutes);
 
 // ================= GOALS =================
 

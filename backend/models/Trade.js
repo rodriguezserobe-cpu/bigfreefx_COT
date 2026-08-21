@@ -52,6 +52,23 @@ const tradeSchema = new mongoose.Schema(
       default: 0,
     },
 
+    currency: {
+      type: String,
+      enum: [
+        "ZAR",
+        "USD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "AUD",
+        "CAD",
+        "CHF",
+        "NZD",
+        "LSL",
+      ],
+      default: "ZAR",
+    },
+
     risk: {
       type: Number,
       default: 1,

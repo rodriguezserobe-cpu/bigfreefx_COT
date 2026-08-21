@@ -1,6 +1,7 @@
 import API from "../../api/auth";
 import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
+import { useTradingJournal } from "../../context/TradingJournalContext";
 
 const AddTradeModal = ({
   open,
@@ -9,6 +10,7 @@ const AddTradeModal = ({
   trade = null,
   onSaved,
 }) => {
+  const { currency } = useTradingJournal();
   const [pair, setPair] = useState("");
   const [direction, setDirection] = useState("BUY");
   const [lotSize, setLotSize] = useState("");
@@ -162,6 +164,7 @@ const AddTradeModal = ({
         strategy,
         closeDate: closeDate || null,
         profit: closeDate ? Number(profit || 0) : 0,
+        currency,
         rr: `${risk}:${reward}`,
         result: tradeResult,
         notes,
