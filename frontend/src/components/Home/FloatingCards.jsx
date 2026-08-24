@@ -1,28 +1,27 @@
-import { FaChartLine, FaCoins, FaGlobe, FaBitcoin } from "react-icons/fa";
+import { FaChartLine, FaGlobe, FaBookOpen, FaBullseye } from "react-icons/fa";
 
 const cards = [
   {
     icon: <FaChartLine />,
-    title: "Weekly COT Reports",
-    text: "Institutional market positioning updated every week.",
+    title: "COT Analysis",
+    text: "Analyze weekly Commitment of Traders data and understand institutional market positioning.",
   },
   {
     icon: <FaGlobe />,
-    title: "Forex Analysis",
-    text: "Professional analysis for major and minor currency pairs.",
+    title: "Market Analysis",
+    text: "Analyze Forex, Gold, Silver and other markets using positioning and market data.",
   },
   {
-    icon: <FaCoins />,
-    title: "Gold & Silver",
-    text: "Understand commercial positioning before trading metals.",
+    icon: <FaBookOpen />,
+    title: "Trading Journal",
+    text: "Record your trades, review your setups, track profit and loss, and build better trading discipline.",
   },
   {
-    icon: <FaBitcoin />,
-    title: "Crypto Analysis",
-    text: "Institutional analysis for Bitcoin and other cryptocurrencies.",
+    icon: <FaBullseye />,
+    title: "Goals & Performance",
+    text: "Analyze your trading performance, use the trading calendar, and track your goals over time.",
   },
 ];
-
 export default function FloatingCards() {
   return (
     <section className="relative z-20 mt-10 sm:mt-12 md:mt-16 lg:-mt-20 xl:-mt-24">

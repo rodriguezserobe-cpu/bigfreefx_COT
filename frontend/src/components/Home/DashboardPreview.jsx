@@ -1,13 +1,13 @@
-import report1 from "../../assets/preview/reports/report1.png";
+import report1 from "../../assets/preview/reports/report1.jpg";
 import report2 from "../../assets/preview/reports/report2.png";
 import report3 from "../../assets/preview/reports/report3.png";
 
 import analysis1 from "../../assets/preview/analysis/analysis1.jpg";
-import analysis2 from "../../assets/preview/analysis/analysis2.png";
+import analysis2 from "../../assets/preview/analysis/analysis2.jpg";
 import analysis3 from "../../assets/preview/analysis/analysis3.png";
 
-import dashboard1 from "../../assets/preview/dashboard/dashboard1.jpg";
-import dashboard2 from "../../assets/preview/dashboard/dashboard2.jpg";
+import dashboard1 from "../../assets/preview/dashboard/dashboard1.png";
+import dashboard2 from "../../assets/preview/dashboard/dashboard2.png";
 import dashboard3 from "../../assets/preview/dashboard/dashboard3.png";
 
 import ImageSlider from "./ImageSlider";
@@ -15,23 +15,23 @@ import ImageSlider from "./ImageSlider";
 const cards = [
   {
     images: [report1, report2, report3],
-    title: "Weekly COT Reports",
+    title: "COT Market Analysis",
     description:
-      "Access simplified Commitment of Traders reports updated weekly to understand institutional market positioning.",
+      "Analyze weekly Commitment of Traders data and understand institutional positioning across Forex, metals and other markets.",
     button: "Explore",
   },
   {
     images: [analysis1, analysis2, analysis3],
-    title: "Institutional Analysis",
+    title: "Performance & Goals ",
     description:
-      "Analyze Commercials, Non-Commercials and Retail positioning before entering Forex and Gold trades.",
+      "Use analytics, the trading calendar and goals to measure your progress and build consistent trading habits.",
     button: "Learn More",
   },
   {
     images: [dashboard1, dashboard2, dashboard3],
-    title: "Trading Dashboard",
+    title: "Trading Journal",
     description:
-      "Monitor Forex, Gold, Silver and Cryptocurrency markets from one professional dashboard.",
+      "Record your trades, review your setups, track profit and loss, and understand what is working in your trading.",
     button: "View Dashboard",
   },
 ];
@@ -48,14 +48,14 @@ export default function DashboardPreview() {
           </p>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl 2xl:text-6xl font-bold text-white mb-5 lg:mb-6">
-            Everything You Need For
-            <span className="text-sky-400"> Institutional Trading</span>
+            Everything You Need to
+            <span className="text-sky-400"> Grow as a Trading</span>
           </h2>
 
           <p className="text-gray-400 text-base lg:text-lg max-w-3xl mx-auto leading-7 lg:leading-8 px-2">
-            BigFree FX Trading simplifies Commitment of Traders analysis by
-            transforming complex institutional data into clear market insights
-            for Forex, Metals and Cryptocurrency traders.
+            BigFree FX Trading brings market intelligence and trading discipline
+            together. Analyze institutional positioning with COT data, manage
+            your trades with the Trading Journal.
           </p>
         </div>
 

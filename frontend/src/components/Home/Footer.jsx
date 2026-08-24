@@ -27,14 +27,13 @@ export default function Footer() {
 
               <div>
                 <h2 className="text-2xl font-bold text-white">BIGFREE FX</h2>
-                <p className="text-sky-400 text-sm">Institutional Trading</p>
+                <p className="text-sky-400 text-sm">Trading</p>
               </div>
             </button>
 
             <p className="text-gray-400 leading-8">
-              BigFree FX Trading simplifies Commitment of Traders (COT)
-              analysis, helping traders understand institutional market
-              positioning for Forex, Metals and Cryptocurrency markets.
+              Helping traders combine Commitment of Traders analysis with their
+              own trading strategy through professional trading tools
             </p>
           </div>
 
@@ -109,7 +108,7 @@ export default function Footer() {
             <div className="space-y-5 text-gray-400">
               <div className="flex items-center justify-center md:justify-start gap-4">
                 <FaEnvelope className="text-sky-400" />
-                <span>rodriguezserobe@gmail.com</span>
+                <span>bigfreefxtrading@gmail.com</span>
               </div>
 
               <div className="flex items-center justify-center md:justify-start gap-4">

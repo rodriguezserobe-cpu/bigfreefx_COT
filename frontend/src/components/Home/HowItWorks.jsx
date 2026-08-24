@@ -38,7 +38,7 @@ const steps = [
   {
     icon: <FaChartLine />,
     title: "Dashboard",
-    text: "Access professional COT analysis.",
+    text: "Access professional COT & Journal.",
   },
 ];
 
