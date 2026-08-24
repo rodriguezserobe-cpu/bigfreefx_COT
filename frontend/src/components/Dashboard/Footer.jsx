@@ -13,7 +13,7 @@ const Footer = () => {
 
           <div className="mt-4 space-y-2">
             <p className="text-gray-400 text-sm sm:text-base">
-              📧 rodriguezserobe@mail.com
+              📧 bigfreefxtrading@gmail.com
             </p>
 
             <p className="text-gray-400 text-sm sm:text-base">
