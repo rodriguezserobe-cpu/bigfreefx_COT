@@ -11,12 +11,106 @@ import AnalyticsDashboard from "../../components/TradingJournal/AnalyticsDashboa
 import CalendarDashboard from "../../components/TradingJournal/CalendarDashboard";
 import GoalsDashboard from "../../components/TradingJournal/GoalsDashboard";
 
+// ============================================================
+// STATS LOADING
+// IMPORTANT: KEEP THIS OUTSIDE TradingJournalDashboard
+// ============================================================
+
+const StatsLoading = () => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map((item) => (
+        <div
+          key={item}
+          className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 animate-pulse"
+        >
+          <div className="flex items-center justify-between">
+            <div className="h-4 w-24 rounded bg-slate-700" />
+            <div className="h-10 w-10 rounded-xl bg-slate-800" />
+          </div>
+
+          <div className="mt-5 h-8 w-28 rounded bg-slate-700" />
+
+          <div className="mt-3 h-3 w-20 rounded bg-slate-800" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// ============================================================
+// TRADING HISTORY LOADING
+// IMPORTANT: KEEP THIS OUTSIDE TradingJournalDashboard
+// ============================================================
+
+const TradingHistoryLoading = () => {
+  return (
+    <div className="min-h-[400px] flex flex-col items-center justify-center p-8">
+      <div className="relative h-14 w-14">
+        <div className="absolute inset-0 rounded-full border-4 border-slate-700" />
+
+        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-sky-400 animate-spin" />
+      </div>
+
+      <h3 className="mt-6 text-lg sm:text-xl font-semibold text-white">
+        Loading Trading History...
+      </h3>
+
+      <p className="mt-2 text-sm text-slate-400 text-center">
+        Connecting to your trading data...
+      </p>
+
+      <p className="mt-1 text-xs text-slate-500 text-center">
+        The server may be waking up. This can take a moment.
+      </p>
+    </div>
+  );
+};
+
+// ============================================================
+// TRADING HISTORY ERROR
+// IMPORTANT: KEEP THIS OUTSIDE TradingJournalDashboard
+// ============================================================
+
+const TradingHistoryError = ({ error, onRetry }) => {
+  return (
+    <div className="min-h-[400px] flex flex-col items-center justify-center p-8 text-center">
+      <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+        <span className="text-red-400 text-2xl">!</span>
+      </div>
+
+      <h3 className="mt-5 text-lg sm:text-xl font-semibold text-white">
+        Unable to Load Trading History
+      </h3>
+
+      <p className="mt-2 max-w-md text-sm text-slate-400">
+        {typeof error === "string"
+          ? error
+          : "We could not connect to your trading data."}
+      </p>
+
+      <button
+        onClick={onRetry}
+        className="mt-6 rounded-xl bg-sky-500 px-6 py-3 font-semibold text-white transition hover:bg-sky-600"
+      >
+        Try Again
+      </button>
+    </div>
+  );
+};
+
+// ============================================================
+// TRADING JOURNAL DASHBOARD
+// ============================================================
+
 const TradingJournalDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [showFilter, setShowFilter] = useState(false);
+
   const [activeSection, setActiveSection] = useState("dashboard");
 
   const [view, setView] = useState("table");
@@ -32,9 +126,9 @@ const TradingJournalDashboard = () => {
     fetchTrades,
   } = useTradingJournal();
 
-  // ================================
+  // ============================================================
   // LOAD SAVED VIEW
-  // ================================
+  // ============================================================
 
   useEffect(() => {
     const savedView = localStorage.getItem("journalView");
@@ -44,9 +138,9 @@ const TradingJournalDashboard = () => {
     }
   }, []);
 
-  // ================================
+  // ============================================================
   // REFRESH WHEN JOURNAL BECOMES ACTIVE
-  // ================================
+  // ============================================================
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -62,9 +156,9 @@ const TradingJournalDashboard = () => {
     };
   }, [fetchTrades]);
 
-  // ================================
+  // ============================================================
   // PERIOD TRADES
-  // ================================
+  // ============================================================
 
   const periodTrades =
     selectedPeriod === "ALL"
@@ -81,18 +175,18 @@ const TradingJournalDashboard = () => {
           return period === selectedPeriod;
         });
 
-  // ================================
+  // ============================================================
   // CHANGE VIEW
-  // ================================
+  // ============================================================
 
   const changeView = (selectedView) => {
     setView(selectedView);
     localStorage.setItem("journalView", selectedView);
   };
 
-  // ================================
+  // ============================================================
   // FORMAT PERIOD
-  // ================================
+  // ============================================================
 
   const formatPeriod = (period) => {
     if (!period || period === "ALL") {
@@ -109,71 +203,15 @@ const TradingJournalDashboard = () => {
     });
   };
 
-  // ================================
-  // LOADING SCREEN
-  // ================================
-
-  if (tradesLoading) {
-    return (
-      <div className="min-h-screen w-full bg-[#0B1120] text-white flex items-center justify-center px-4">
-        <div className="text-center">
-          {/* Loading Spinner */}
-          <div className="mx-auto h-14 w-14 animate-spin rounded-full border-4 border-slate-700 border-t-sky-400" />
-
-          <h2 className="mt-6 text-xl sm:text-2xl font-bold text-white">
-            Loading Trading Journal...
-          </h2>
-
-          <p className="mt-2 text-sm sm:text-base text-slate-400">
-            Connecting to your trading data...
-          </p>
-
-          <p className="mt-2 text-xs sm:text-sm text-slate-500">
-            This may take a moment while the server wakes up.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // ================================
-  // ERROR SCREEN
-  // ================================
-
-  if (tradesError) {
-    return (
-      <div className="min-h-screen w-full bg-[#0B1120] text-white flex items-center justify-center px-4">
-        <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8 text-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-white">
-            Unable to Load Trading Journal
-          </h2>
-
-          <p className="mt-3 text-sm sm:text-base text-slate-400">
-            {typeof tradesError === "string"
-              ? tradesError
-              : "We could not connect to your trading data."}
-          </p>
-
-          <button
-            onClick={fetchTrades}
-            className="mt-6 rounded-xl bg-sky-500 px-6 py-3 font-semibold text-white transition hover:bg-sky-600"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ================================
-  // MAIN JOURNAL
-  // ================================
+  // ============================================================
+  // MAIN PAGE
+  // ============================================================
 
   return (
     <div className="bg-[#0B1120] min-h-screen w-full text-white overflow-x-hidden">
-      {/* ================================
+      {/* ========================================================
           SIDEBAR
-      ================================ */}
+      ======================================================== */}
 
       <JournalSidebar
         collapsed={collapsed}
@@ -188,16 +226,18 @@ const TradingJournalDashboard = () => {
         onSelectPeriod={setSelectedPeriod}
       />
 
-      {/* ================================
+      {/* ========================================================
           MAIN AREA
-      ================================ */}
+      ======================================================== */}
 
       <div
         className={`min-w-0 transition-all duration-300 ${
           collapsed ? "lg:ml-20" : "lg:ml-72"
         }`}
       >
-        {/* Navbar */}
+        {/* ======================================================
+            NAVBAR
+        ====================================================== */}
 
         <JournalNavbar
           collapsed={collapsed}
@@ -207,27 +247,40 @@ const TradingJournalDashboard = () => {
           activeSection={activeSection}
         />
 
-        {/* ================================
+        {/* ======================================================
             CONTENT
-        ================================ */}
+        ====================================================== */}
 
         <main className="pt-27 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12 pb-8 2xl:pb-12 w-full">
-          {/* ================================
+          {/* ====================================================
               DASHBOARD
-          ================================ */}
+          ==================================================== */}
 
           {activeSection === "dashboard" && (
             <>
-              {/* Stats */}
+              {/* ==================================================
+                  STATS CARDS
+                  Header/sidebar remain visible while this loads.
+              ================================================== */}
 
               <div className="w-full">
-                <StatsCards trades={periodTrades} currency={currency} />
+                {tradesLoading ? (
+                  <StatsLoading />
+                ) : tradesError ? (
+                  <StatsLoading />
+                ) : (
+                  <StatsCards trades={periodTrades} currency={currency} />
+                )}
               </div>
 
-              {/* Journal */}
+              {/* ==================================================
+                  TRADING JOURNAL
+              ================================================== */}
 
               <div className="mt-6 sm:mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 min-h-[500px] sm:min-h-[600px] p-3 sm:p-5 md:p-6 xl:p-8 2xl:p-10 w-full">
-                {/* Header */}
+                {/* ==================================================
+                    JOURNAL HEADER
+                ================================================== */}
 
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 sm:mb-8 gap-4">
                   <div className="min-w-0">
@@ -239,7 +292,9 @@ const TradingJournalDashboard = () => {
                     </h2>
                   </div>
 
-                  {/* View buttons */}
+                  {/* ==================================================
+                      VIEW BUTTONS
+                  ================================================== */}
 
                   <div className="flex w-full md:w-auto items-center gap-2">
                     <button
@@ -266,12 +321,14 @@ const TradingJournalDashboard = () => {
                   </div>
                 </div>
 
-                {/* ================================
+                {/* ==================================================
                     TRADING HISTORY
-                ================================ */}
+                ================================================== */}
 
                 <div className="mt-4 sm:mt-6 rounded-2xl border border-slate-800 bg-slate-900/80 overflow-hidden w-full">
-                  {/* History Header */}
+                  {/* ==================================================
+                      HISTORY HEADER
+                  ================================================== */}
 
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 sm:p-5 md:p-6 border-b border-slate-800">
                     <div className="min-w-0">
@@ -284,10 +341,12 @@ const TradingJournalDashboard = () => {
                       </p>
                     </div>
 
-                    {/* Controls */}
+                    {/* ==================================================
+                        CONTROLS
+                    ================================================== */}
 
                     <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full lg:w-auto">
-                      {/* Search */}
+                      {/* SEARCH */}
 
                       <div className="flex items-center bg-slate-800 rounded-xl px-4 h-11 w-full sm:w-[220px] lg:w-[230px] 2xl:w-[280px]">
                         <input
@@ -299,7 +358,7 @@ const TradingJournalDashboard = () => {
                         />
                       </div>
 
-                      {/* Filter */}
+                      {/* FILTER */}
 
                       <div className="relative w-full sm:w-auto">
                         <button
@@ -340,7 +399,7 @@ const TradingJournalDashboard = () => {
                         )}
                       </div>
 
-                      {/* Add Trade */}
+                      {/* ADD TRADE */}
 
                       <button
                         onClick={() => setOpenAddTrade(true)}
@@ -351,12 +410,19 @@ const TradingJournalDashboard = () => {
                     </div>
                   </div>
 
-                  {/* ================================
+                  {/* ==================================================
                       TABLE / CARDS
-                  ================================ */}
+                  ================================================== */}
 
                   <div className="w-full min-w-0">
-                    {view === "table" ? (
+                    {tradesLoading ? (
+                      <TradingHistoryLoading />
+                    ) : tradesError ? (
+                      <TradingHistoryError
+                        error={tradesError}
+                        onRetry={fetchTrades}
+                      />
+                    ) : view === "table" ? (
                       <div className="w-full overflow-x-auto">
                         <TradesTable
                           trades={periodTrades}
@@ -381,29 +447,29 @@ const TradingJournalDashboard = () => {
             </>
           )}
 
-          {/* ================================
+          {/* ========================================================
               ANALYTICS
-          ================================ */}
+          ======================================================== */}
 
           {activeSection === "analytics" && <AnalyticsDashboard />}
 
-          {/* ================================
+          {/* ========================================================
               CALENDAR
-          ================================ */}
+          ======================================================== */}
 
           {activeSection === "calendar" && <CalendarDashboard />}
 
-          {/* ================================
+          {/* ========================================================
               GOALS
-          ================================ */}
+          ======================================================== */}
 
           {activeSection === "goals" && <GoalsDashboard />}
         </main>
       </div>
 
-      {/* ================================
+      {/* ==========================================================
           ADD TRADE MODAL
-      ================================ */}
+      ========================================================== */}
 
       <AddTradeModal
         open={openAddTrade}
