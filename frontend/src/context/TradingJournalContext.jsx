@@ -13,9 +13,54 @@ export const TradingJournalProvider = ({ children }) => {
   const [selectedPeriod, setSelectedPeriod] = useState("ALL");
   const [currency, setCurrency] = useState("ZAR");
 
+  // ================================
+  // TRADES
+  // ================================
+
+  const [trades, setTrades] = useState([]);
+  const [tradesLoading, setTradesLoading] = useState(true);
+  const [tradesError, setTradesError] = useState(null);
+
+  // ================================
+  // EXCHANGE RATES
+  // ================================
+
   const [exchangeRates, setExchangeRates] = useState({});
   const [historicalRates, setHistoricalRates] = useState({});
   const [ratesLoading, setRatesLoading] = useState(false);
+
+  // ================================
+  // LOAD TRADES
+  // ================================
+
+  const fetchTrades = useCallback(async () => {
+    try {
+      setTradesLoading(true);
+      setTradesError(null);
+
+      const { data } = await API.get("/trades");
+
+      // Make sure we always store an array
+      setTrades(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Failed to load trading journal trades:", error);
+
+      setTradesError(error);
+
+      // Don't replace existing data with an empty array
+      // if a refresh fails.
+    } finally {
+      setTradesLoading(false);
+    }
+  }, []);
+
+  // ================================
+  // LOAD TRADES WHEN JOURNAL LOADS
+  // ================================
+
+  useEffect(() => {
+    fetchTrades();
+  }, [fetchTrades]);
 
   // ================================
   // LOAD USER CURRENCY
@@ -255,11 +300,32 @@ export const TradingJournalProvider = ({ children }) => {
   return (
     <TradingJournalContext.Provider
       value={{
+        // =========================
+        // JOURNAL PERIOD
+        // =========================
+
         selectedPeriod,
         setSelectedPeriod,
 
+        // =========================
+        // TRADES
+        // =========================
+
+        trades,
+        tradesLoading,
+        tradesError,
+        fetchTrades,
+
+        // =========================
+        // CURRENCY
+        // =========================
+
         currency,
         changeCurrency,
+
+        // =========================
+        // EXCHANGE RATES
+        // =========================
 
         exchangeRates,
         historicalRates,
@@ -267,7 +333,10 @@ export const TradingJournalProvider = ({ children }) => {
         fetchExchangeRates,
         fetchHistoricalRates,
 
-        // Both are available now
+        // =========================
+        // CONVERSION
+        // =========================
+
         convertCurrency,
         convertHistoricalCurrency,
 
