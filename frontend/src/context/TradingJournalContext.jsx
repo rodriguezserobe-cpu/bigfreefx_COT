@@ -34,24 +34,43 @@ export const TradingJournalProvider = ({ children }) => {
   // ================================
 
   const fetchTrades = useCallback(async () => {
-    try {
-      setTradesLoading(true);
-      setTradesError(null);
+    setTradesLoading(true);
+    setTradesError(null);
 
-      const { data } = await API.get("/trades");
+    const maxAttempts = 5;
 
-      // Make sure we always store an array
-      setTrades(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Failed to load trading journal trades:", error);
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const { data } = await API.get("/trades", {
+          timeout: 60000,
+        });
 
-      setTradesError(error);
+        if (Array.isArray(data)) {
+          setTrades(data);
+          setTradesLoading(false);
+          return data;
+        }
 
-      // Don't replace existing data with an empty array
-      // if a refresh fails.
-    } finally {
-      setTradesLoading(false);
+        throw new Error("Invalid trades response");
+      } catch (error) {
+        console.error(
+          `Failed to load trades. Attempt ${attempt}/${maxAttempts}`,
+          error,
+        );
+
+        if (attempt < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+        }
+      }
     }
+
+    setTradesError(
+      "Unable to load your trading data. Please check your connection and try again.",
+    );
+
+    setTradesLoading(false);
+
+    return null;
   }, []);
 
   // ================================

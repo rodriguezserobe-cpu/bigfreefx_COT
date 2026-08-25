@@ -38,8 +38,12 @@ export default function LoginForm({ setAuthMode }) {
         password: form.password,
       });
 
+      // Save login session
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      // Start the 2-hour inactivity timer
+      localStorage.setItem("lastActivity", Date.now().toString());
 
       toast.success(res.data.message);
 

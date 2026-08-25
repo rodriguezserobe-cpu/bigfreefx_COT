@@ -139,7 +139,7 @@ export default function AuthPanel({ authMode, setAuthMode }) {
             hover:bg-sky-500/20
             transition
 
-max-sm:top-3
+            max-sm:top-3
             max-sm:right-3
             max-sm:w-9
             max-sm:h-9
