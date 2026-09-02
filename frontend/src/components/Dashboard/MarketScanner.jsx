@@ -28,9 +28,11 @@ const MarketSection = ({ title, data }) => {
 
             <tbody>
               {data.map((item) => {
-                const signalColor = item.signal.includes("BUY")
+                const signal = item.signal || "";
+
+                const signalColor = signal.includes("BUY")
                   ? "text-green-400"
-                  : item.signal.includes("SELL")
+                  : signal.includes("SELL")
                     ? "text-red-400"
                     : "text-yellow-400";
 
@@ -46,7 +48,7 @@ const MarketSection = ({ title, data }) => {
                     <td
                       className={`text-center font-bold ${signalColor} whitespace-nowrap`}
                     >
-                      {item.signal}
+                      {signal}
                     </td>
 
                     <td className="text-center text-gray-300 whitespace-nowrap">
@@ -54,7 +56,7 @@ const MarketSection = ({ title, data }) => {
                     </td>
 
                     <td className="text-right p-3 whitespace-nowrap">
-                      {item.strength.toFixed(2)}
+                      {Number(item.strength || 0).toFixed(2)}
                     </td>
                   </tr>
                 );
@@ -63,7 +65,6 @@ const MarketSection = ({ title, data }) => {
           </table>
         </div>
 
-        {/* Phone hint */}
         <div className="lg:hidden text-center text-slate-400 text-xs py-3 border-t border-slate-700">
           ← Swipe left or right to view the full table →
         </div>
@@ -75,43 +76,48 @@ const MarketSection = ({ title, data }) => {
 const MarketScanner = ({ signals, marketType, asset }) => {
   if (!signals) return null;
 
-  let filteredData = [];
-  let title = "";
-
   switch (marketType) {
     case "FOREX":
-      title = "FOREX";
-      filteredData = (signals.forex || []).filter((item) =>
-        item.symbol.includes(asset),
+      return (
+        <MarketSection
+          title="FOREX"
+          data={(signals.forex || []).filter((item) =>
+            item.symbol.includes(asset),
+          )}
+        />
       );
-      break;
 
     case "METALS":
-      title = "METALS";
-      filteredData = (signals.metals || []).filter((item) =>
-        item.symbol.includes(asset),
+      return (
+        <MarketSection
+          title="METALS"
+          data={(signals.metals || []).filter((item) =>
+            item.symbol.includes(asset),
+          )}
+        />
       );
-      break;
 
     case "INDICES":
-      title = "INDICES";
-      filteredData = (signals.indices || []).filter(
-        (item) => item.symbol === asset,
+      return (
+        <MarketSection
+          title="INDICES"
+          data={(signals.indices || []).filter((item) => item.symbol === asset)}
+        />
       );
-      break;
 
     case "CRYPTO":
-      title = "CRYPTO";
-      filteredData = (signals.crypto || []).filter((item) =>
-        item.symbol.includes(asset),
+      return (
+        <MarketSection
+          title="CRYPTO"
+          data={(signals.crypto || []).filter((item) =>
+            item.symbol.includes(asset),
+          )}
+        />
       );
-      break;
 
     default:
-      filteredData = [];
+      return null;
   }
-
-  return <MarketSection title={title} data={filteredData} />;
 };
 
 export default MarketScanner;

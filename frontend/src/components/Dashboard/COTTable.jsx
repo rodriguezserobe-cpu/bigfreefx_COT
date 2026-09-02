@@ -1,4 +1,4 @@
-const COTTable = ({ data = [] }) => {
+const COTTable = ({ data = [], selectedReport, onSelectReport }) => {
   return (
     <div className="mt-10 bg-[#0d1117]/90 backdrop-blur-xl border border-sky-500/20 rounded-xl shadow-xl overflow-hidden">
       <div className="overflow-x-auto">
@@ -21,27 +21,48 @@ const COTTable = ({ data = [] }) => {
               const previous = data[index + 1];
 
               const changeLong = previous ? row.long - previous.long : 0;
+
               const changeShort = previous ? row.short - previous.short : 0;
+
+              const isSelected = selectedReport?.reportDate === row.reportDate;
 
               return (
                 <tr
                   key={`${row.reportDate}-${index}`}
-                  className="text-center bg-[#0d1117]/90 border-b border-sky-500/20 hover:bg-slate-800 transition text-xs sm:text-sm lg:text-base"
+                  onClick={() => onSelectReport(row)}
+                  className={`
+                    text-center
+                    border-b border-sky-500/20
+                    text-xs sm:text-sm lg:text-base
+                    cursor-pointer
+                    transition-all
+                    ${
+                      isSelected
+                        ? "bg-sky-500/20 ring-1 ring-inset ring-sky-400"
+                        : "bg-[#0d1117]/90 hover:bg-slate-800"
+                    }
+                  `}
                 >
                   <td className="p-3 whitespace-nowrap">
-                    {new Date(row.reportDate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    <div className="flex items-center justify-center gap-2">
+                      {isSelected && (
+                        <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+                      )}
+
+                      {new Date(row.reportDate).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
                   </td>
 
                   <td className="p-3 bg-green-300 text-black whitespace-nowrap">
-                    {row.long.toLocaleString()}
+                    {Number(row.long || 0).toLocaleString()}
                   </td>
 
                   <td className="p-3 bg-red-300 text-black whitespace-nowrap">
-                    {row.short.toLocaleString()}
+                    {Number(row.short || 0).toLocaleString()}
                   </td>
 
                   <td className="p-3 text-green-400 whitespace-nowrap">
@@ -62,10 +83,10 @@ const COTTable = ({ data = [] }) => {
 
                   <td
                     className={`p-3 text-black whitespace-nowrap ${
-                      row.net >= 0 ? "bg-green-200" : "bg-red-200"
+                      Number(row.net || 0) >= 0 ? "bg-green-200" : "bg-red-200"
                     }`}
                   >
-                    {row.net.toLocaleString()}
+                    {Number(row.net || 0).toLocaleString()}
                   </td>
                 </tr>
               );
@@ -74,7 +95,6 @@ const COTTable = ({ data = [] }) => {
         </table>
       </div>
 
-      {/* Mobile hint */}
       <div className="lg:hidden text-center text-slate-400 text-xs py-3 border-t border-slate-700">
         ← Swipe left or right to view the full table →
       </div>

@@ -302,6 +302,7 @@ const MARKET_TO_CURRENCY = {
   BITCOIN: "BTC",
   "MICRO BITCOIN": "BTC",
 };
+
 export const buildCurrencyScores = (cotData, group = "nonCommercial") => {
   const scores = {};
 
@@ -430,15 +431,15 @@ export const fetchCFTCData = async () => {
 // ==========================================
 // BUILD LIVE DASHBOARD DATA
 // ==========================================
-
 export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
   console.log("Selected Group:", group);
 
   const dbReports = await COTReport.find({}).sort({ reportDate: -1 }).lean();
 
-  // -----------------------------
-  // Build ALL reports first
-  // -----------------------------
+  // =========================================================
+  // BUILD ALL REPORTS
+  // =========================================================
+
   const allReports = dbReports.map((report) => ({
     contract_market_name: report.market,
     report_date_as_yyyy_mm_dd: report.reportDate,
@@ -454,28 +455,85 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
     nonrept_positions_short_all: report.retail.short,
   }));
 
-  // -----------------------------
-  // Build Currency Scores from ALL currencies
-  // -----------------------------
+  // =========================================================
+  // BUILD LATEST CURRENCY SCORES
+  // =========================================================
+
   const currencyScores = buildCurrencyScores(allReports, group);
 
-  // -----------------------------
-  // Build ALL signals
-  // -----------------------------
+  // =========================================================
+  // LATEST MARKET SIGNALS
+  // =========================================================
+
   const signals = calculateAllMarketSignals(currencyScores);
 
-  // -----------------------------
-  // Filter only for charts/tables
-  // -----------------------------
+  // =========================================================
+  // BUILD HISTORICAL SIGNALS BY REPORT DATE
+  // =========================================================
+
+  const reportsByDate = {};
+
+  allReports.forEach((report) => {
+    const date = new Date(report.report_date_as_yyyy_mm_dd)
+      .toISOString()
+      .split("T")[0];
+
+    if (!reportsByDate[date]) {
+      reportsByDate[date] = [];
+    }
+
+    reportsByDate[date].push(report);
+  });
+
+  const historicalSignals = {};
+
+  Object.entries(reportsByDate).forEach(([date, reports]) => {
+    const historicalCurrencyScores = buildCurrencyScores(reports, group);
+
+    historicalSignals[date] = calculateAllMarketSignals(
+      historicalCurrencyScores,
+    );
+  });
+
+  const historicalMarketData = {};
+
+  Object.entries(reportsByDate).forEach(([date, reports]) => {
+    const marketsForDate = {};
+
+    reports.forEach((report) => {
+      const currency = MARKET_TO_CURRENCY[report.contract_market_name];
+
+      if (!currency) return;
+
+      const analysis = analyzeCOT(report, currency, group);
+
+      if (!analysis) return;
+
+      marketsForDate[currency] = analysis;
+    });
+
+    historicalMarketData[date] = marketsForDate;
+  });
+
+  // =========================================================
+  // FILTER REPORTS FOR SELECTED ASSET
+  // =========================================================
+
   const filteredData = allReports.filter((report) => {
     const currency = MARKET_TO_CURRENCY[report.contract_market_name];
 
     if (!currency) return false;
 
-    if (asset && currency !== asset) return false;
+    if (asset && currency !== asset) {
+      return false;
+    }
 
     return true;
   });
+
+  // =========================================================
+  // BUILD LATEST + HISTORY
+  // =========================================================
 
   const latest = {};
   const history = {};
@@ -496,6 +554,10 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
     history[currency].push(analysis);
   });
 
+  // =========================================================
+  // SORT + LIMIT HISTORY
+  // =========================================================
+
   Object.keys(history).forEach((currency) => {
     history[currency] = history[currency]
       .sort((a, b) => new Date(b.reportDate) - new Date(a.reportDate))
@@ -504,10 +566,21 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
     latest[currency] = history[currency][0];
   });
 
+  // =========================================================
+  // RETURN
+  // =========================================================
+
   return {
     latest,
     history,
+
+    // Latest signals
     signals,
+
+    // Historical signals indexed by report date
+    historicalSignals,
+    historicalMarketData,
+
     marketType,
     asset,
     group,
