@@ -1,4 +1,9 @@
 const COTTable = ({ data = [], selectedReport, onSelectReport }) => {
+  const handleRowClick = (row) => {
+    console.log("COT REPORT CLICKED:", row);
+    onSelectReport(row);
+  };
+
   return (
     <div className="mt-10 bg-[#0d1117]/90 backdrop-blur-xl border border-sky-500/20 rounded-xl shadow-xl overflow-hidden">
       <div className="overflow-x-auto">
@@ -20,21 +25,26 @@ const COTTable = ({ data = [], selectedReport, onSelectReport }) => {
             {data.map((row, index) => {
               const previous = data[index + 1];
 
-              const changeLong = previous ? row.long - previous.long : 0;
+              const changeLong = previous
+                ? Number(row.long || 0) - Number(previous.long || 0)
+                : 0;
 
-              const changeShort = previous ? row.short - previous.short : 0;
+              const changeShort = previous
+                ? Number(row.short || 0) - Number(previous.short || 0)
+                : 0;
 
               const isSelected = selectedReport?.reportDate === row.reportDate;
 
               return (
                 <tr
                   key={`${row.reportDate}-${index}`}
-                  onClick={() => onSelectReport(row)}
+                  onClick={() => handleRowClick(row)}
                   className={`
                     text-center
                     border-b border-sky-500/20
                     text-xs sm:text-sm lg:text-base
                     cursor-pointer
+                    select-none
                     transition-all
                     ${
                       isSelected
@@ -82,9 +92,16 @@ const COTTable = ({ data = [], selectedReport, onSelectReport }) => {
                   <td className="p-3 whitespace-nowrap">{row.shortPct}%</td>
 
                   <td
-                    className={`p-3 text-black whitespace-nowrap ${
-                      Number(row.net || 0) >= 0 ? "bg-green-200" : "bg-red-200"
-                    }`}
+                    className={`
+                      p-3
+                      text-black
+                      whitespace-nowrap
+                      ${
+                        Number(row.net || 0) >= 0
+                          ? "bg-green-200"
+                          : "bg-red-200"
+                      }
+                    `}
                   >
                     {Number(row.net || 0).toLocaleString()}
                   </td>
