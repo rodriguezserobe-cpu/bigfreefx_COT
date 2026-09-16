@@ -65,21 +65,13 @@ const TradingHistoryError = ({ error, onRetry }) => {
 const TradingJournalDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [showFilter, setShowFilter] = useState(false);
-
   const [activeSection, setActiveSection] = useState("dashboard");
-
   const [view, setView] = useState("table");
-
   const [openAddTrade, setOpenAddTrade] = useState(false);
 
-  /*
-   * Prevent the latest period from being selected again
-   * every time the trades array changes.
-   */
   const periodInitialized = useRef(false);
 
   const {
@@ -92,9 +84,6 @@ const TradingJournalDashboard = () => {
     fetchTrades,
   } = useTradingJournal();
 
-  /*
-   * Restore the user's preferred table/card view.
-   */
   useEffect(() => {
     const savedView = localStorage.getItem("journalView");
 
@@ -103,9 +92,6 @@ const TradingJournalDashboard = () => {
     }
   }, []);
 
-  /*
-   * Refresh trades when the browser/app becomes visible again.
-   */
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
@@ -121,14 +107,8 @@ const TradingJournalDashboard = () => {
   }, [fetchTrades]);
 
   /*
-   * Automatically select the latest trading period
-   * that contains a trade.
-   *
-   * Example:
-   * September 2026 = latest month
-   * August 2026 = older month
-   *
-   * September will automatically be selected.
+   * Automatically select the latest month that contains trades.
+   * There is no "ALL" Trading Period.
    */
   useEffect(() => {
     if (
@@ -162,16 +142,9 @@ const TradingJournalDashboard = () => {
   }, [trades, tradesLoading, setSelectedPeriod]);
 
   /*
-   * FILTER TRADES BY SELECTED TRADING PERIOD.
+   * Only trades from the selected Trading Period.
    *
-   * There is NO "ALL" Trading Period.
-   *
-   * The selected period might be:
-   * 2026-09
-   * 2026-08
-   * 2026-07
-   *
-   * Only trades belonging to that month are displayed.
+   * No "ALL" Trading Period.
    */
   const periodTrades = trades.filter((trade) => {
     if (!trade.openDate || !selectedPeriod) {
@@ -187,13 +160,6 @@ const TradingJournalDashboard = () => {
     return period === selectedPeriod;
   });
 
-  /*
-   * Search and status filtering happens AFTER
-   * the Trading Period filter.
-   *
-   * This means the user can NEVER accidentally see
-   * trades from another trading period.
-   */
   const filteredTrades = periodTrades.filter((trade) => {
     const search = searchTerm.trim().toLowerCase();
 
@@ -204,27 +170,23 @@ const TradingJournalDashboard = () => {
       trade.direction?.toLowerCase().includes(search) ||
       trade.notes?.toLowerCase().includes(search);
 
+    /*
+     * This "ALL" belongs to the trade STATUS filter.
+     * It is NOT a Trading Period.
+     */
     const matchesFilter =
       filter === "ALL" || trade.result?.toUpperCase() === filter;
 
     return matchesSearch && matchesFilter;
   });
 
-  /*
-   * Change between table and card views.
-   */
   const changeView = (newView) => {
     setView(newView);
     localStorage.setItem("journalView", newView);
   };
 
-  /*
-   * Convert YYYY-MM into a readable month name.
-   */
   const formatPeriod = (period) => {
-    if (!period) {
-      return "";
-    }
+    if (!period) return "";
 
     const [year, month] = period.split("-");
 
@@ -239,7 +201,6 @@ const TradingJournalDashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#080c12] text-white">
-      {/* Sidebar */}
       <JournalSidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -253,13 +214,11 @@ const TradingJournalDashboard = () => {
         setActiveSection={setActiveSection}
       />
 
-      {/* Main Area */}
       <div
         className={`min-h-screen transition-all duration-300 ${
           collapsed ? "lg:ml-20" : "lg:ml-72"
         }`}
       >
-        {/* Navbar */}
         <JournalNavbar
           collapsed={collapsed}
           setMobileOpen={setMobileOpen}
@@ -276,42 +235,15 @@ const TradingJournalDashboard = () => {
           formatPeriod={formatPeriod}
         />
 
-        {/* Content */}
         <main className="p-3 sm:p-5 lg:p-6">
-          {/* Dashboard */}
           {activeSection === "dashboard" && (
             <div className="space-y-5">
-              {/* Current Trading Period */}
-              {selectedPeriod && (
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-slate-500">
-                      Trading Period
-                    </p>
-
-                    <h1 className="text-xl sm:text-2xl font-bold text-white">
-                      {formatPeriod(selectedPeriod)}
-                    </h1>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-xs text-slate-500">Trades</p>
-
-                    <p className="text-lg font-bold text-sky-400">
-                      {periodTrades.length}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Stats */}
               {tradesLoading ? (
                 <StatsLoading />
               ) : (
                 <StatsCards trades={filteredTrades} currency={currency} />
               )}
 
-              {/* Trading History */}
               {tradesLoading ? (
                 <TradingHistoryLoading />
               ) : tradesError ? (
@@ -331,12 +263,10 @@ const TradingJournalDashboard = () => {
             </div>
           )}
 
-          {/* Analytics */}
           {activeSection === "analytics" && (
             <AnalyticsDashboard trades={periodTrades} currency={currency} />
           )}
 
-          {/* Calendar */}
           {activeSection === "calendar" && (
             <CalendarDashboard
               trades={trades}
@@ -345,14 +275,12 @@ const TradingJournalDashboard = () => {
             />
           )}
 
-          {/* Goals */}
           {activeSection === "goals" && (
             <GoalsDashboard trades={trades} currency={currency} />
           )}
         </main>
       </div>
 
-      {/* Add Trade Modal */}
       {openAddTrade && (
         <AddTradeModal
           open={openAddTrade}
