@@ -111,7 +111,9 @@ const ViewTradeModal = ({ open, onClose, trade }) => {
             <div>
               <p className="text-xs text-slate-400 sm:text-sm">Open Date</p>
               <p className="mt-1 break-words font-semibold text-white">
-                {new Date(trade.openDate).toLocaleString()}
+                {trade.openDate
+                  ? new Date(trade.openDate).toLocaleString()
+                  : "-"}
               </p>
             </div>
 
@@ -153,7 +155,6 @@ const ViewTradeModal = ({ open, onClose, trade }) => {
                 )}
               </p>
 
-              {/* Original amount */}
               {originalCurrency !== currency && !ratesLoading && (
                 <p className="mt-1 text-xs text-slate-500">
                   Original:{" "}
@@ -181,35 +182,65 @@ const ViewTradeModal = ({ open, onClose, trade }) => {
               </p>
             </div>
 
-            {/* Before Setup */}
-            {trade.beforeSetupImage && (
-              <div className="sm:col-span-2">
-                <p className="mb-2 text-xs text-slate-400 sm:text-sm">
-                  Before Setup
-                </p>
+            {/* =====================================================
+                TRADE SETUPS
+            ===================================================== */}
 
-                <img
-                  src={trade.beforeSetupImage}
-                  alt="Before setup"
-                  className="max-h-[500px] w-full rounded-xl border border-slate-800 object-contain"
-                />
-              </div>
-            )}
+            <div className="sm:col-span-2 border-t border-slate-800 pt-5">
+              <h3 className="text-base font-bold text-white sm:text-lg">
+                Trade Setups
+              </h3>
+
+              <p className="mt-1 text-xs text-slate-400 sm:text-sm">
+                Chart screenshots captured before and after the trade.
+              </p>
+            </div>
+
+            {/* Before Setup */}
+            <div className="sm:col-span-1">
+              <p className="mb-2 text-xs font-medium text-slate-400 sm:text-sm">
+                Before Setup
+              </p>
+
+              {trade.beforeSetupImage ? (
+                <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+                  <img
+                    src={trade.beforeSetupImage}
+                    alt="Before trade setup"
+                    className="max-h-[500px] w-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-950 px-4 text-center">
+                  <p className="text-sm text-slate-500">
+                    No before setup uploaded
+                  </p>
+                </div>
+              )}
+            </div>
 
             {/* After Setup */}
-            {trade.afterSetupImage && (
-              <div className="sm:col-span-2">
-                <p className="mb-2 text-xs text-slate-400 sm:text-sm">
-                  After Setup
-                </p>
+            <div className="sm:col-span-1">
+              <p className="mb-2 text-xs font-medium text-slate-400 sm:text-sm">
+                After Setup
+              </p>
 
-                <img
-                  src={trade.afterSetupImage}
-                  alt="After setup"
-                  className="max-h-[500px] w-full rounded-xl border border-slate-800 object-contain"
-                />
-              </div>
-            )}
+              {trade.afterSetupImage ? (
+                <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+                  <img
+                    src={trade.afterSetupImage}
+                    alt="After trade setup"
+                    className="max-h-[500px] w-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-950 px-4 text-center">
+                  <p className="text-sm text-slate-500">
+                    No after setup uploaded
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
