@@ -700,7 +700,7 @@ export const saveLatestReportsToDB = async () => {
       market: report.contract_market_name,
     })
       .sort({ reportDate: -1 })
-      .skip(20);
+      .skip(45);
 
     if (oldReports.length > 0) {
       await COTReport.deleteMany({
