@@ -1,4 +1,4 @@
-const SignalCard = ({ latest, marketName }) => {
+const SignalCard = ({ latest, marketName, group }) => {
   if (!latest) return null;
 
   const net = latest.net || 0;
@@ -13,6 +13,14 @@ const SignalCard = ({ latest, marketName }) => {
 
   const selectedLong = Number(latest.longPct || 0);
   const selectedShort = Number(latest.shortPct || 0);
+
+  const groupNames = {
+    commercial: "Commercials",
+    nonCommercial: "Non-Commercials",
+    retail: "Retail Traders",
+  };
+
+  const selectedGroupName = groupNames[group] || "Selected Group";
 
   const retail = Math.max(0, 100 - selectedLong - selectedShort);
 
@@ -73,10 +81,10 @@ const SignalCard = ({ latest, marketName }) => {
         </div>
 
         {/* RIGHT */}
-
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-4 border-t sm:border-t-0 lg:border-l border-gray-700 pt-6 sm:pt-0 lg:pl-6">
+          {/* SELECTED GROUP LONG */}
           <div className="text-center">
-            <p className="text-gray-400 text-sm">Commercials</p>
+            <p className="text-gray-400 text-sm">{selectedGroupName}</p>
 
             <p className="text-green-400 mb-3">Bullish</p>
 
@@ -92,8 +100,9 @@ const SignalCard = ({ latest, marketName }) => {
             <p className="mt-2">{selectedLong.toFixed(1)}%</p>
           </div>
 
+          {/* SELECTED GROUP SHORT */}
           <div className="text-center">
-            <p className="text-gray-400 text-sm">Non-Commercials</p>
+            <p className="text-gray-400 text-sm">{selectedGroupName}</p>
 
             <p className="text-red-400 mb-3">Bearish</p>
 
@@ -109,8 +118,9 @@ const SignalCard = ({ latest, marketName }) => {
             <p className="mt-2">{selectedShort.toFixed(1)}%</p>
           </div>
 
+          {/* REMAINING */}
           <div className="text-center">
-            <p className="text-gray-400 text-sm">Retail Traders</p>
+            <p className="text-gray-400 text-sm">Remaining</p>
 
             <p className="text-yellow-400 mb-3">Neutral</p>
 
@@ -122,6 +132,7 @@ const SignalCard = ({ latest, marketName }) => {
                 }}
               />
             </div>
+
             <p className="mt-2">{retail.toFixed(1)}%</p>
           </div>
         </div>

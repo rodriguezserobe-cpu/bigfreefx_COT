@@ -279,7 +279,7 @@ export default function Dashboard() {
                 This now changes when a table row is clicked.
             ================================================= */}
 
-            <SignalCard latest={latest} marketName={marketName} />
+            <SignalCard latest={latest} marketName={marketName} group={group} />
 
             {/* =================================================
                 MARKET INFO
