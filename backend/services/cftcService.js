@@ -393,7 +393,7 @@ export const calculateAdvancedCurrencyScores = (cotData) => {
 export const fetchCFTCData = async () => {
   // STEP 1: Get the latest 12 unique report dates
   const datesResponse = await fetch(
-    "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$select=distinct%20report_date_as_yyyy_mm_dd&$order=report_date_as_yyyy_mm_dd%20DESC&$limit=15",
+    "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$select=distinct%20report_date_as_yyyy_mm_dd&$order=report_date_as_yyyy_mm_dd%20DESC&$limit=45",
   );
 
   if (!datesResponse.ok) {

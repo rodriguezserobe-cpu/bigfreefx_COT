@@ -1,8 +1,8 @@
 const SignalCard = ({ latest, marketName, group }) => {
   if (!latest) return null;
 
-  const net = latest.net || 0;
-  const openInterest = latest.openInterest || 1;
+  const net = Number(latest.net || 0);
+  const openInterest = Number(latest.openInterest || 1);
 
   const strength = Math.min(
     100,
@@ -10,10 +10,15 @@ const SignalCard = ({ latest, marketName, group }) => {
   );
 
   const bullish = latest.bias === "Bullish";
+  const bearish = latest.bias === "Bearish";
 
   const selectedLong = Number(latest.longPct || 0);
   const selectedShort = Number(latest.shortPct || 0);
 
+  // The percentage not represented by Long or Short
+  const neutral = Math.max(0, 100 - selectedLong - selectedShort);
+
+  // Name of the currently selected COT group
   const groupNames = {
     commercial: "Commercials",
     nonCommercial: "Non-Commercials",
@@ -22,7 +27,8 @@ const SignalCard = ({ latest, marketName, group }) => {
 
   const selectedGroupName = groupNames[group] || "Selected Group";
 
-  const retail = Math.max(0, 100 - selectedLong - selectedShort);
+  // HOLD is neutral
+  //const signalIsNeutral = !bullish && !bearish;
 
   return (
     <div className="bg-[#0d1117]/90 backdrop-blur-xl border-b border-sky-500/20 shadow-xl rounded-lg p-4 sm:p-5 lg:p-5 2xl:p-7 mb-6">
@@ -36,25 +42,45 @@ const SignalCard = ({ latest, marketName, group }) => {
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div>
               <p className="text-gray-400 text-sm">Market</p>
+
               <p className="text-lg sm:text-xl font-semibold">{marketName}</p>
             </div>
 
             <div>
               <p className="text-gray-400 text-sm">Bias</p>
-              <p className={bullish ? "text-green-400" : "text-red-400"}>
-                {bullish ? "Bullish 🟢" : "Bearish 🔴"}
+
+              <p
+                className={
+                  bullish
+                    ? "text-green-400"
+                    : bearish
+                      ? "text-red-400"
+                      : "text-yellow-400"
+                }
+              >
+                {bullish ? "Bullish 🟢" : bearish ? "Bearish 🔴" : "Neutral 🟡"}
               </p>
             </div>
 
             <div>
               <p className="text-gray-400 text-sm">Strength</p>
+
               <p>{strength}%</p>
             </div>
 
             <div>
               <p className="text-gray-400 text-sm">Action</p>
-              <p className={bullish ? "text-green-400" : "text-red-400"}>
-                {bullish ? "BUY" : "SELL"}
+
+              <p
+                className={
+                  bullish
+                    ? "text-green-400"
+                    : bearish
+                      ? "text-red-400"
+                      : "text-yellow-400"
+                }
+              >
+                {bullish ? "BUY" : bearish ? "SELL" : "HOLD"}
               </p>
             </div>
           </div>
@@ -62,6 +88,7 @@ const SignalCard = ({ latest, marketName, group }) => {
           <div>
             <div className="flex justify-between text-sm mb-2">
               <span>Signal Strength</span>
+
               <span>{strength}%</span>
             </div>
 
@@ -70,7 +97,9 @@ const SignalCard = ({ latest, marketName, group }) => {
                 className={
                   bullish
                     ? "bg-green-500 h-3 rounded-full"
-                    : "bg-red-500 h-3 rounded-full"
+                    : bearish
+                      ? "bg-red-500 h-3 rounded-full"
+                      : "bg-yellow-500 h-3 rounded-full"
                 }
                 style={{
                   width: `${strength}%`,
@@ -82,7 +111,7 @@ const SignalCard = ({ latest, marketName, group }) => {
 
         {/* RIGHT */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-4 border-t sm:border-t-0 lg:border-l border-gray-700 pt-6 sm:pt-0 lg:pl-6">
-          {/* SELECTED GROUP LONG */}
+          {/* BULLISH */}
           <div className="text-center">
             <p className="text-gray-400 text-sm">{selectedGroupName}</p>
 
@@ -92,7 +121,7 @@ const SignalCard = ({ latest, marketName, group }) => {
               <div
                 className="bg-green-500 h-2 rounded-full"
                 style={{
-                  width: `${selectedLong.toFixed(1)}%`,
+                  width: `${selectedLong}%`,
                 }}
               />
             </div>
@@ -100,7 +129,7 @@ const SignalCard = ({ latest, marketName, group }) => {
             <p className="mt-2">{selectedLong.toFixed(1)}%</p>
           </div>
 
-          {/* SELECTED GROUP SHORT */}
+          {/* BEARISH */}
           <div className="text-center">
             <p className="text-gray-400 text-sm">{selectedGroupName}</p>
 
@@ -110,7 +139,7 @@ const SignalCard = ({ latest, marketName, group }) => {
               <div
                 className="bg-red-500 h-2 rounded-full"
                 style={{
-                  width: `${selectedShort.toFixed(1)}%`,
+                  width: `${selectedShort}%`,
                 }}
               />
             </div>
@@ -118,9 +147,9 @@ const SignalCard = ({ latest, marketName, group }) => {
             <p className="mt-2">{selectedShort.toFixed(1)}%</p>
           </div>
 
-          {/* REMAINING */}
+          {/* NEUTRAL */}
           <div className="text-center">
-            <p className="text-gray-400 text-sm">Remaining</p>
+            <p className="text-gray-400 text-sm">{selectedGroupName}</p>
 
             <p className="text-yellow-400 mb-3">Neutral</p>
 
@@ -128,12 +157,12 @@ const SignalCard = ({ latest, marketName, group }) => {
               <div
                 className="bg-yellow-500 h-2 rounded-full"
                 style={{
-                  width: `${retail.toFixed(1)}%`,
+                  width: `${neutral}%`,
                 }}
               />
             </div>
 
-            <p className="mt-2">{retail.toFixed(1)}%</p>
+            <p className="mt-2">{neutral.toFixed(1)}%</p>
           </div>
         </div>
       </div>
