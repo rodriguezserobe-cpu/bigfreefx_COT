@@ -561,7 +561,7 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
   Object.keys(history).forEach((currency) => {
     history[currency] = history[currency]
       .sort((a, b) => new Date(b.reportDate) - new Date(a.reportDate))
-      .slice(0, 15);
+      .slice(0, 45);
 
     latest[currency] = history[currency][0];
   });
