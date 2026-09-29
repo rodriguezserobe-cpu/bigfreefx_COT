@@ -393,7 +393,7 @@ export const calculateAdvancedCurrencyScores = (cotData) => {
 export const fetchCFTCData = async () => {
   // STEP 1: Get the latest 12 unique report dates
   const datesResponse = await fetch(
-    "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$select=distinct%20report_date_as_yyyy_mm_dd&$order=report_date_as_yyyy_mm_dd%20DESC&$limit=45",
+    "https://publicreporting.cftc.gov/resource/6dca-aqww.json?$select=distinct%20report_date_as_yyyy_mm_dd&$order=report_date_as_yyyy_mm_dd%20DESC&$limit=100",
   );
 
   if (!datesResponse.ok) {
@@ -561,7 +561,7 @@ export const buildLiveCOTData = async ({ marketType, asset, group } = {}) => {
   Object.keys(history).forEach((currency) => {
     history[currency] = history[currency]
       .sort((a, b) => new Date(b.reportDate) - new Date(a.reportDate))
-      .slice(0, 45);
+      .slice(0, 100);
 
     latest[currency] = history[currency][0];
   });
@@ -700,7 +700,7 @@ export const saveLatestReportsToDB = async () => {
       market: report.contract_market_name,
     })
       .sort({ reportDate: -1 })
-      .skip(45);
+      .skip(100);
 
     if (oldReports.length > 0) {
       await COTReport.deleteMany({
